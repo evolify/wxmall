@@ -4,16 +4,17 @@ App({
     console.log('test');
     var that = this;
     //  获取商城名称
-    wx.request({
-      url: 'https://api.it120.cc/'+ that.globalData.subDomain +'/config/get-value',
-      data: {
-        key: 'mallName'
-      },
-      success: function(res) {
-        wx.setStorageSync('mallName', res.data.data.value);
-      }
-    })
-    this.login();
+    // wx.request({
+    //   url: 'https://api.it120.cc/'+ that.globalData.subDomain +'/config/get-value',
+    //   data: {
+    //     key: 'mallName'
+    //   },
+    //   success: function(res) {
+    //     wx.setStorageSync('mallName', res.data.data.value);
+    //   }
+    // })
+    wx.setStorageSync('mallName', 'YJ商城')
+    // this.login();
   },
   login : function () {
     var that = this;

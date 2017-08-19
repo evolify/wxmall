@@ -22,6 +22,7 @@ Page({
   },
 
   tabClick: function (e) {
+    console.log('tab')
     this.setData({
       activeCategoryId: e.currentTarget.id
     });
@@ -35,9 +36,12 @@ Page({
     })  
   },
   toDetailsTap:function(e){
-    wx.navigateTo({
-      url:"/pages/goods-details/index?id="+e.currentTarget.dataset.id
-    })
+      wx.showToast({
+        title: 'on the way...',
+      })
+    // wx.navigateTo({
+    //   url:"/pages/goods-details/index?id="+e.currentTarget.dataset.id
+    // })
   },
   tapBanner: function(e) {
     if (e.currentTarget.dataset.id != 0) {
