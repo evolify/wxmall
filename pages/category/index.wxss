@@ -1,0 +1,19 @@
+/* pages/category/index.wxss */
+.container{
+  align-items:stretch;
+  padding:0;
+}
+.cate-nav{
+  padding:5px;
+  box-shadow:0 4px 10px -6px gray;
+}
+.cate-grid{
+  display: flex;
+  flex-flow:row wrap;
+  margin-top:10px;
+}
+.cate-item{
+  padding:10px 20px;
+  box-shadow:0 0 10px -3px gray;
+  margin:10px;
+}

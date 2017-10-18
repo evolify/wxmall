@@ -1,0 +1,32 @@
+/* pages/goodsList/index.wxss */
+.container{
+  align-items:stretch;
+  background: #eee;
+}
+.search-box{
+  display: flex;
+  flex-flow:row nowrap;
+  align-items: center;
+  background: #fff;
+}
+.search-box .input-keywords{
+  flex-grow:1;
+}
+.search-box .btn-search{
+  flex-shrink: 0;
+  padding:0 10px;
+}
+.goods-list{
+
+}
+.goods-item{
+  display: flex;
+  flex-flow: row nowrap;
+  background: #fff;
+  padding:5px;
+  margin-top:2px;
+}
+.goods-item .goods-img{
+  width:75px;
+  height: 75px;
+}

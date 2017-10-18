@@ -1,0 +1,15 @@
+<!--pages/category/index.wxml-->
+<view class='container'>
+  <view class='cate-nav' 
+    bindtap='navBack'
+    style="visibility:{{selectedCates.length>0 ?'visible' :'visible'}}">
+    <view wx:if="{{selectedCates.length === 1}}" class='nav-back'>{{'<  全部分类'}}</view>
+    <view wx:if="{{selectedCates.length>1}}" class='nav-back'>{{'<  '+selectedCates[selectedCates.length-2].name}}</view>
+  </view> 
+  <view class='cate-grid'>
+    <view class='cate-item' bindtap='toGoodsList'>全部</view>
+    <view class='cate-item' wx:for="{{cates}}" wx:key="unique" data-cate="{{item}}" bindtap='tapCate'>
+      {{item.name}}
+    </view>
+  </view>
+</view>

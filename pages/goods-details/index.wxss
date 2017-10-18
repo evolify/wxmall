@@ -19,6 +19,7 @@ swiper-item image {
   display: inline-block;
   overflow: hidden;
   height:748rpx;
+  
 }
 .swiper-container .dots{  
   position: absolute;  
@@ -43,7 +44,6 @@ swiper-item image {
 .goods-info{
   background-color: #fff;
   padding: 35rpx 0;
-  margin-bottom: 24rpx;
   width: 100%;
 }
 .goods-info .goods-title{
@@ -75,15 +75,34 @@ swiper-item image {
   background: #fff url(https://cdn.it120.cc/images/weappshop/arrow-right.png) no-repeat 697rpx center;
   background-size: 18rpx auto;
 }
-.goods-des-info{
+.goods-info-card{
   width: 100%;
   box-sizing: border-box;
   background-color: #fff;
+  margin-top:10rpx;
+}
+.card-body{
+  padding:5px 10px;
+}
+.goods-list{
+  display: flex;
+  flex-flow:row wrap;
+}
+.goods-list .prop{
+  padding:5px 10px;
+  font-size:28rpx;
+  margin:5px;
+  border:1px solid gray;
+}
+.goods-list .prop.selected{
+  color: #e64340;
+  border: 1px solid #e64340;
 }
 .label-title{
-  font-size:28rpx;
+  font-size:35rpx;
   color:#000000;
-  padding: 30rpx;
+  padding: 10rpx 20rpx;
+  border-bottom:1rpx solid #eee;
 }
 .goods-text{
   padding: 0 30rpx;
@@ -263,19 +282,19 @@ swiper-item image {
 .buy-num-box .num-box{
      display: flex;
 }
-.buy-num-box .num-box .num-jian,
-.buy-num-box .num-box .num-input,
-.buy-num-box .num-box .num-jia{
+.buy-num-box .num-box .count-dec,
+.buy-num-box .num-box .count-input,
+.buy-num-box .num-box .count-inc{
   width: 80rpx;
   height: 64rpx;
   line-height: 62rpx;
   text-align: center;
   border: 1px solid #eee;
 }
-.buy-num-box .num-box .num-input{
+.buy-num-box .num-box .count-input{
   font-size: 28rpx;
 }
-.buy-num-box .num-box .num-input input{
+.buy-num-box .num-box .count-input input{
   height: 100%;
 }
 .popup-join-btn{
@@ -287,6 +306,6 @@ swiper-item image {
   color:#ffffff;
   background-color: #e64340;
 }
-.buy-num-box .num-box .hui{
+.buy-num-box .num-box .disable{
   background-color: #f5f5f9;
 }

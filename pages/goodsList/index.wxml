@@ -1,0 +1,15 @@
+<!--pages/goodsList/index.wxml-->
+<view class='container'>
+  <view class='search-box'>
+    <input class='input-keywords' placeholder='输入关键字查找'></input>
+    <label size='mini' class='btn-search'><icon type='search'></icon></label>
+  </view>
+  <view class='goods-list'>
+    <view class='goods-item' wx:for='{{goodsList}}' wx:key="unique" data-id="{{item.id}}" bindtap='toDetails'>
+      <image class='goods-img'
+        mode="aspectFill"
+        src="{{serverUrl+'/'+(item.images[0] && item.images[0].path)}}" />
+      <label>{{item.name}}</label>
+    </view>
+  </view>
+</view>

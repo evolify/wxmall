@@ -1,5 +1,6 @@
 //index.js
 //获取应用实例
+import config from '../../config'
 var app = getApp()
 
 Page({
@@ -15,40 +16,47 @@ Page({
     hasNoCoupons: true,
     coupons: [],
     youhuijine:0, //优惠券金额
-    curCoupon:null // 当前选择使用的优惠券
+    curCoupon:null, // 当前选择使用的优惠券
+
+    serverUrl:config.serverUrl
   },
-  onShow : function () {
-    var that = this;
-    var shopList = [];   
-    //立即购买下单
-    if ("buyNow"==that.data.orderType){
-      var buyNowInfoMem = wx.getStorageSync('buyNowInfo');
-      if (buyNowInfoMem && buyNowInfoMem.shopList) {
-        shopList = buyNowInfoMem.shopList
-      }
-    }else{
-      //购物车下单
-      var shopCarInfoMem = wx.getStorageSync('shopCarInfo');
-      if (shopCarInfoMem && shopCarInfoMem.shopList) {
-        // shopList = shopCarInfoMem.shopList
-        shopList = shopCarInfoMem.shopList.filter(entity => {
-          return entity.active;
-        });
-      }
-    }
-    that.setData({
-      goodsList: shopList,
-    });
-    that.initShippingAddress();    
-  },
+
   
-  onLoad: function (e) {
+  onLoad: function (options) {
     var that = this;
     //显示收货地址标识
     that.setData({
       isNeedLogistics: 1,
-      orderType: e.orderType
-    });  
+      orderType: options.orderType
+    });
+    const {orderType,goodsId,count}=options
+    this.initGoodsList(orderType,goodsId,count)
+  },
+  initGoodsList(orderType,goodsId,count){
+    let list=[]
+    if(orderType === "buyNow"){
+      wx.request({
+        url: config.serverUrl+'/api/goods'+goodsId,
+        success:res=>{
+          if(res.data.code === 0){
+            list.push({
+              goods:res.data.data,
+              count
+            })
+          }
+        }
+      })
+    }else{
+      list=wx.getStorageSync('toByGoodsList')
+    }
+    this.setData({
+      goodsList:list
+    })
+  },
+
+  onShow11 : function () {
+
+    that.initShippingAddress();    
   },
 
   getDistrictId : function (obj, aaa){
@@ -149,6 +157,7 @@ Page({
       }
     })
   },
+
   processYunfei: function () {
     var that = this;
     var goodsList = this.data.goodsList;
@@ -247,6 +256,7 @@ Page({
     });
     that.getMyCoupons();
   },
+
   addAddress: function () {
     wx.navigateTo({
       url:"/pages/address-add/index"
@@ -257,42 +267,4 @@ Page({
       url:"/pages/select-address/index"
     })
   },
-  getMyCoupons: function () {
-    var that = this;
-    wx.request({
-      url: 'https://api.it120.cc/' + app.globalData.subDomain + '/discounts/my',
-      data: {
-        token: app.globalData.token,
-        status:0
-      },
-      success: function (res) {
-        if (res.data.code == 0) {
-          var coupons = res.data.data.filter(entity => {
-            return entity.moneyHreshold <= that.data.allGoodsAndYunPrice;
-          });
-          if (coupons.length > 0) {
-            that.setData({
-              hasNoCoupons: false,
-              coupons: coupons
-            });
-          }
-        }
-      }
-    })
-  },
-  bindChangeCoupon: function (e) {
-    const selIndex = e.detail.value[0] - 1;
-    if (selIndex == -1) {
-      this.setData({
-        youhuijine: 0,
-        curCoupon:null
-      });
-      return;
-    }
-    console.log("selIndex:" + selIndex);
-    this.setData({
-      youhuijine: this.data.coupons[selIndex].money,
-      curCoupon: this.data.coupons[selIndex]
-    });
-  }
 })
