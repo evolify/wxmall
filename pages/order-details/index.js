@@ -1,66 +1,32 @@
 var app = getApp();
+import req from '../../utils/request.js'
+const statusList = ["全部", "待付款", "待发货", "待收货", "已完成"]
 Page({
     data:{
-      orderId:0,
-        goodsList:[
-            {
-                pic:'/images/goods02.png',
-                name:'爱马仕（HERMES）大地男士最多两行文字超出就这样显…',
-                price:'300.00',
-                label:'大地50ml',
-                number:2
-            },
-            {
-                pic:'/images/goods02.png',
-                name:'爱马仕（HERMES）大地男士最多两行文字超出就这样显…',
-                price:'300.00',
-                label:'大地50ml',
-                number:2
-            }
-        ],
-        yunPrice:"10.00"
+      id:0,
+      no:'',
+      status:'待付款',
+      orderTime:'',
+      price:0.00,
+
+      orderContent:[],
+      address:null,
     },
     onLoad:function(e){
-      var orderId = e.id;
-      this.data.orderId = orderId;
-      this.setData({
-        orderId: orderId
-      });
+      var orderId = e.id
+      this.orderDetails(orderId)
     },
-    onShow : function () {
-      var that = this;
-      wx.request({
-        url: 'https://api.it120.cc/' + app.globalData.subDomain + '/order/detail',
-        data: {
-          token: app.globalData.token,
-          id: that.data.orderId
-        },
-        success: (res) => {
-          wx.hideLoading();
-          if (res.data.code != 0) {
-            wx.showModal({
-              title: '错误',
-              content: res.data.msg,
-              showCancel: false
-            })
-            return;
-          }
-          that.setData({
-            orderDetail: res.data.data
-          });
-        }
-      })
-      var yunPrice = parseFloat(this.data.yunPrice);
-      var allprice = 0;
-      var goodsList = this.data.goodsList;
-      for (var i = 0; i < goodsList.length; i++) {
-        allprice += parseFloat(goodsList[0].price) * goodsList[0].number;
-      }
-      this.setData({
-        allGoodsPrice: allprice,
-        yunPrice: yunPrice
-      });
+    orderDetails(id){
+      req.get('/api/order/'+id)
+        .then(res=>data.data)
+        .then(data=>{
+          this.setData({
+            ...data,
+            status:statusList[data.status],
+          })
+        })
     },
+
     wuliuDetailsTap:function(e){
       var orderId = e.currentTarget.dataset.id;
       wx.navigateTo({

@@ -1,19 +1,37 @@
 var wxpay = require('../../utils/pay.js')
+import req from '../../utils/request.js'
+import config from '../../config'
 var app = getApp()
 Page({
   data:{
-    statusType:["全部","待付款","待发货","待收货","已完成"],
-    currentTpye:0,
-    tabClass: ["", "", "", "", ""]
+    serverUrl:config.serverUrl,
+    statusList:["全部","待付款","待发货","待收货","已完成"],
+    status:1,
+    tabClass: ["", "", "", "", ""],
+    orderList:[]
+  },
+  onShow(){
+    this.loadOrderList(this.data.status)
+  },
+  loadOrderList(status){
+    req.get('/api/order/byStatus/'+status)
+      .then(res=>res.data.data)
+      .then(data=>{
+        this.setData({
+          orderList:data
+        })
+      })
   },
   statusTap:function(e){
-     var curType =  e.currentTarget.dataset.index;
-     this.data.currentTpye = curType
+     var status =  e.currentTarget.dataset.index;
+     console.log(status)
+     this.loadOrderList(status)
      this.setData({
-      currentTpye:curType
+      status
      });
-     this.onShow();
   },
+
+
   orderDetail : function (e) {
     var orderId = e.currentTarget.dataset.id;
     wx.navigateTo({
@@ -22,34 +40,27 @@ Page({
   },
   cancelOrderTap:function(e){
     var that = this;
-    var orderId = e.currentTarget.dataset.id;
+    var id = e.currentTarget.dataset.id
+    console.log(id)
      wx.showModal({
       title: '确定要取消该订单吗？',
       content: '',
-      success: function(res) {
+      success: res=> {
         if (res.confirm) {
           wx.showLoading();
-          wx.request({
-            url: 'https://api.it120.cc/' + app.globalData.subDomain + '/order/close',
-            data: {
-              token: app.globalData.token,
-              orderId: orderId
-            },
-            success: (res) => {
-              wx.hideLoading();
-              if (res.data.code == 0) {
-                that.onShow();
-              }
-            }
-          })
+          req.delete('/api/order/'+id)
+            .then(res=>{
+              wx.hideLoading()
+              this.loadOrderList()
+            })
         }
       }
     })
   },
+
   toPayTap:function(e){
-    var orderId = e.currentTarget.dataset.id;
-    var money = e.currentTarget.dataset.money;
-    wxpay.wxpay(app, money, orderId, "/pages/order-list/index");
+    const {id,price}=e.currentTarget.dataset
+    wxpay.wxpay(app, price, id, "/pages/order-list/index");
   },
   onLoad:function(options){
     // 生命周期函数--监听页面加载
@@ -87,48 +98,6 @@ Page({
         }
       }
     })
-  },
-  onShow:function(){
-    // 获取订单列表
-    wx.showLoading();
-    var that = this;
-    var postData = {
-      token: app.globalData.token
-    };
-    if (that.data.currentTpye == 1) {
-      postData.status = 0
-    }
-    if (that.data.currentTpye == 2) {
-      postData.status = 1
-    }
-    if (that.data.currentTpye == 3) {
-      postData.status = 2
-    }
-    if (that.data.currentTpye == 4) {
-      postData.status = 4
-    }
-    this.getOrderStatistics();
-    wx.request({
-      url: 'https://api.it120.cc/' + app.globalData.subDomain + '/order/list',
-      data: postData,
-      success: (res) => {
-        wx.hideLoading();
-        if (res.data.code == 0) {
-          that.setData({
-            orderList: res.data.data.orderList,
-            logisticsMap : res.data.data.logisticsMap,
-            goodsMap : res.data.data.goodsMap
-          });
-        } else {
-          this.setData({
-            orderList: null,
-            logisticsMap: {},
-            goodsMap: {}
-          });
-        }
-      }
-    })
-    
   },
   onHide:function(){
     // 生命周期函数--监听页面隐藏

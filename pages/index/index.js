@@ -1,6 +1,7 @@
 //index.js
 //获取应用实例
 import config from '../../config'
+import req from '../../utils/request'
 var app = getApp()
 Page({
   data: {
@@ -51,28 +52,28 @@ Page({
     })
 
     this.loadBanners()
-
-    wx.request({
-      url: config.serverUrl+'/api/product',
-      success:res=>{
-        if(res.data.code === 0){
+    this.loadProducts()
+  },
+  loadProducts(){
+    req.get('/api/product')
+      .then(res => res.data)
+      .then(data => {
+        if (data.code === 0) {
           this.setData({
-            goodsList:res.data.data
+            goodsList: data.data
           })
         }
-      }
-    })
+      })
   },
   loadBanners(){
-    wx.request({
-      url: config.serverUrl+'/banner',
-      success:res=>{
-        if(res.data.code === 0){
+    req.get('/api/banner')
+      .then(res=>res.data)
+      .then(data=>{
+        if(data.code === 0){
           this.setData({
-            banners:res.data.data
+            banners: data.data
           })
         }
-      }
-    })
+      })
   },
 })

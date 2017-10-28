@@ -1,72 +1,137 @@
 //index.js
 //获取应用实例
 import config from '../../config'
+import req from '../../utils/request.js'
 var app = getApp()
 
 Page({
   data: {
     goodsList:[],
-    isNeedLogistics:0, // 是否需要物流信息
-    allGoodsPrice:0,
-    yunPrice:0,
-    allGoodsAndYunPrice:0,
-    goodsJsonStr:"",
+
+    totalPrice:0,
     orderType:"", //订单类型，购物车下单或立即支付下单，默认是购物车，
 
-    hasNoCoupons: true,
-    coupons: [],
-    youhuijine:0, //优惠券金额
-    curCoupon:null, // 当前选择使用的优惠券
-
-    serverUrl:config.serverUrl
+    serverUrl:config.serverUrl,
+    deliverType:0, //0 渔山岛自提，1 邮寄
+    addressList:[],
+    addressArray:[],//picker中用到，tx实力有点low。。。
+    address:null,
+    tips:''
   },
 
   
   onLoad: function (options) {
-    var that = this;
-    //显示收货地址标识
-    that.setData({
-      isNeedLogistics: 1,
-      orderType: options.orderType
-    });
+    // that.setData({
+    //   isNeedLogistics: 1,
+    //   orderType: options.orderType
+    // });
     const {orderType,goodsId,count}=options
     this.initGoodsList(orderType,goodsId,count)
   },
-  initGoodsList(orderType,goodsId,count){
-    let list=[]
-    if(orderType === "buyNow"){
-      wx.request({
-        url: config.serverUrl+'/api/goods'+goodsId,
-        success:res=>{
-          if(res.data.code === 0){
-            list.push({
-              goods:res.data.data,
-              count
-            })
-          }
-        }
-      })
-    }else{
-      list=wx.getStorageSync('toByGoodsList')
-    }
+
+  tapFetch(){
     this.setData({
-      goodsList:list
+      deliverType:0
+    })
+  },
+  tapPost() {
+    this.setData({
+      deliverType: 1
+    })
+  },
+  bindAddressChange(e){
+    this.setData({
+      address:this.data.addressList[e.detail.value]
     })
   },
 
-  onShow11 : function () {
-
-    that.initShippingAddress();    
+  initGoodsList(orderType,goodsId,count){
+    let list=[]
+    if(orderType === "buyNow"){
+      req.get('/api/goods/'+goodsId)
+        .then(res=>res.data)
+        .then(data=>{
+          if(data.code===0){
+            list.push({
+              goods: data.data,
+              count
+            })
+          }
+          return list
+        })
+        .then(list=>{
+          this.setData({
+            goodsList:list,
+            totalPrice: list[0].goods.price * list[0].count
+          })
+        })
+    }else{
+      list=wx.getStorageSync('toByGoodsList')      
+      this.setData({
+        goodsList:list,
+        totalPrice:list.length>1
+          ?list.reduce((v1,v2)=>v1.goods.price*v1.count+v2.goods.price*v2.count)
+          :list[0].goods.price*list[0].count
+      })
+    }
   },
 
-  getDistrictId : function (obj, aaa){
-    if (!obj) {
-      return "";
+  onShow : function () {
+    this.loadAddressList()
+  },
+
+  loadAddressList(){
+    req.get('/api/address')
+      .then(res=>res.data)
+      .then(data=>{
+        if(data.code===0){
+          let address
+          if (this.data.address && this.data.address.id) {
+            address = data.data.find(addr => addr.id === this.data.address.id)
+          } else {
+            address = data.data[0]
+          }
+          this.setData({
+            addressList: data.data,
+            addressArray: data.data.map(item => item.contact + '  ' + item.address),
+            address
+          })
+        }
+      })
+  },
+
+  submitOrder(e){
+    wx.showLoading();
+    req.post('/api/order',{
+        price: this.data.totalPrice,
+        deliverType: this.data.deliverType,
+        addressId: this.data.deliverType === 1 ? this.data.address.id : null,
+        orderContents: this.data.goodsList.map(o => ({
+          goodsId: o.goods.id,
+          count: o.count
+        })),
+        tips:e.detail.value.tips
+      })
+      .then(res=>res.data)
+      .then(data=>{
+        wx.hideLoading()
+        this.updateShoppingCar()
+        wx.reLaunch({
+          url: "/pages/order-list/index"
+        });
+      })
+  },
+
+  updateShoppingCar(){
+    if(this.data.orderType!=='buyNow'){
+      let list1 = wx.getStorageSync('toByGoodsList')
+      let list2=wx.getStorageSync('shoppingCar')
+      wx.setStorage({
+        key: 'shoppingCar',
+        data: list2.filter(o=>list1.every(o1=>o1.goods.id!==o.goods.id))
+      })
+      wx.removeStorageSync('toByGoodsList')
     }
-    if (!aaa) {
-      return "";
-    }
-    return aaa;
   },
 
   createOrder:function (e) {
@@ -136,135 +201,29 @@ Page({
       }
     })
   },
-  initShippingAddress: function () {
-    var that = this;
-    wx.request({
-      url: 'https://api.it120.cc/'+ app.globalData.subDomain +'/user/shipping-address/default',
-      data: {
-        token:app.globalData.token
-      },
-      success: (res) =>{
-        if (res.data.code == 0) {
-          that.setData({
-            curAddressData:res.data.data
-          });
-        }else{
-          that.setData({
-            curAddressData: null
-          });          
-        }
-        that.processYunfei();
-      }
-    })
-  },
-
-  processYunfei: function () {
-    var that = this;
-    var goodsList = this.data.goodsList;
-    var goodsJsonStr = "[";
-    var isNeedLogistics = 0;
-    var allGoodsPrice = 0;
-
-    for (let i = 0; i < goodsList.length; i++) {
-      let carShopBean = goodsList[i];
-      if (carShopBean.logistics) {
-        isNeedLogistics = 1;
-      }
-      allGoodsPrice += carShopBean.price * carShopBean.number;
-
-      var goodsJsonStrTmp = '';
-      if (i > 0) {
-        goodsJsonStrTmp = ",";
-      }
-      goodsJsonStrTmp += '{"goodsId":' + carShopBean.goodsId + ',"number":' + carShopBean.number + ',"propertyChildIds":"' + carShopBean.propertyChildIds + '","logisticsType":0}';
-      goodsJsonStr += goodsJsonStrTmp;
-      
-      if (carShopBean.logistics && !carShopBean.logistics.isFree) {
-         // 计算应付运费金额
-          let districtId = that.getDistrictId(that.data.curAddressData, that.data.curAddressData.districtId);
-          wx.request({
-            url: 'https://api.it120.cc/' + app.globalData.subDomain + '/shop/goods/price/freight',
-            method: 'POST',
-            header: {
-              'content-type': 'application/x-www-form-urlencoded'
-            },
-            data: {
-              templateId: carShopBean.logisticsType,
-              type: 0,
-              provinceId: this.data.curAddressData.provinceId,
-              cityId: this.data.curAddressData.cityId,
-              districtId: districtId
-            }, // 设置请求的 参数
-            success: (res) => {
-              wx.hideLoading();
-              if (res.data.code != 0) {
-                wx.showModal({
-                  title: '错误',
-                  content: res.data.msg,
-                  showCancel: false
-                })
-                return;
-              }
-              let firstNumber = res.data.data.firstNumber;
-              let addAmount = res.data.data.addAmount;
-              let firstAmount = res.data.data.firstAmount;
-              let addNumber = res.data.data.addNumber;
-              if (carShopBean.logistics.feeType == 0) {
-                // 按件数 
-                let amountLogistics = firstAmount;
-                let numberLeft = carShopBean.number - firstNumber;
-                while (numberLeft > 0) {
-                  numberLeft = numberLeft - addNumber;
-                  amountLogistics = amountLogistics + addAmount;
-                }
-                that.data.yunPrice = that.data.yunPrice + amountLogistics;
-                that.setData({
-                  yunPrice: parseFloat((that.data.yunPrice).toFixed(2))
-                });
-              }
-              if (carShopBean.logistics.feeType == 1) {
-                // 按重量
-                let totleWeight = carShopBean.weight * carShopBean.number;
-                let amountLogistics = firstAmount;
-                let leftWeight = totleWeight- firstNumber;
-                while (leftWeight > 0) {
-                  leftWeight = leftWeight - addNumber;
-                  amountLogistics = amountLogistics + addAmount;
-                }
-                that.data.yunPrice = that.data.yunPrice + amountLogistics;
-                that.setData({
-                  yunPrice: parseFloat((that.data.yunPrice).toFixed(2))
-                });
-              }
-            }
-          })
-        // 计算运费结束    
-      }
-      
-    }
-    goodsJsonStr += "]";
-    console.log("isNeedLogistics:" + isNeedLogistics);
-    console.log("allGoodsPrice:" + parseFloat(allGoodsPrice.toFixed(2)));
-    console.log("goodsJsonStr:" + goodsJsonStr);
-    console.log("yunPrice:" + that.data.yunPrice);
-    that.setData({
-      isNeedLogistics: isNeedLogistics,
-      allGoodsPrice: parseFloat(allGoodsPrice.toFixed(2)),
-      allGoodsAndYunPrice: parseFloat((allGoodsPrice + that.data.yunPrice).toFixed(2)),
-      yunPrice: that.data.yunPrice,
-      goodsJsonStr: goodsJsonStr
-    });
-    that.getMyCoupons();
-  },
 
   addAddress: function () {
     wx.navigateTo({
       url:"/pages/address-add/index"
     })
   },
-  selectAddress: function () {
+  editAddress(){
+    const address = this.data.address
+    if(!address || !address.id){
+      wx.showModal({
+        title: '错误',
+        content: '请选择一个地址',
+        showCancel: false
+      })
+      return
+    }
     wx.navigateTo({
-      url:"/pages/select-address/index"
+      url: '/pages/address-add/index?id='+address.id,
     })
   },
+  // selectAddress: function () {
+  //   wx.navigateTo({
+  //     url:"/pages/select-address/index"
+  //   })
+  // },
 })

@@ -8,7 +8,7 @@
     <view class='goods-item' wx:for='{{goodsList}}' wx:key="unique" data-id="{{item.id}}" bindtap='toDetails'>
       <image class='goods-img'
         mode="aspectFill"
-        src="{{serverUrl+'/'+(item.images[0] && item.images[0].path)}}" />
+        src="{{serverUrl+'/'+item.img}}" />
       <label>{{item.name}}</label>
     </view>
   </view>

@@ -99,7 +99,6 @@
 }
 .goods-info  .goods-des{
     width: 540rpx;
-    height: 78rpx;
     line-height: 39rpx;
     font-size:26rpx;
     color:#000000;

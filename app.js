@@ -1,93 +1,76 @@
 //app.js
+import config from './config'
+import req from './utils/request'
 App({
   onLaunch: function () {
-    console.log('test');
-    var that = this;
-    //  获取商城名称
-    // wx.request({
-    //   url: 'https://api.it120.cc/'+ that.globalData.subDomain +'/config/get-value',
-    //   data: {
-    //     key: 'mallName'
-    //   },
-    //   success: function(res) {
-    //     wx.setStorageSync('mallName', res.data.data.value);
-    //   }
-    // })
-    wx.setStorageSync('mallName', 'YJ商城')
-    // this.login();
+    wx.setStorageSync('mallName','易捷商城')
+    this.configReq()
+    this.beforeLogin();
   },
-  login : function () {
-    var that = this;
-    var token = that.globalData.token;
-    if (token) {
-      wx.request({
-        url: 'https://api.it120.cc/' + that.globalData.subDomain + '/user/check-token',
-        data: {
-          token: token
-        },
-        success: function (res) {
-          if (res.data.code != 0) {
-            that.globalData.token = null;
-            that.login();
-          }
+  configReq(){
+    req.baseUrl(config.serverUrl)
+      .interceptor(res=>{
+        switch(res.data.code){
+          case 401: 
+            wx.showToast({
+              icon: 'loading',
+              title: '重新登录',
+            })
+            this.login()
+            return false;
+          case 0:
+            return true;
+          default:
+            wx.showToast({
+              title: '操作失败',
+            })
+            return false;
         }
       })
-      return;
-    }
-    wx.login({
-      success: function (res) {
-        wx.request({
-          url: 'https://api.it120.cc/'+ that.globalData.subDomain +'/user/wxapp/login',
-          data: {
-            code: res.code
-          },
-          success: function(res) {
-            if (res.data.code == 10000) {
-              // 去注册
-              that.registerUser();
-              return;
-            }
-            if (res.data.code != 0) {
-              // 登录错误 
-              wx.hideLoading();
-              wx.showModal({
-                title: '提示',
-                content: '无法登录，请重试',
-                showCancel:false
-              })
-              return;
-            }
-            that.globalData.token = res.data.data.token;
-          }
-        })
-      }
-    })
   },
-  registerUser: function () {
-    var that = this;
+  beforeLogin() {
+    const token = wx.getStorageSync('token')
+    this.globalData.token=token
+    if (token) {
+      wx.checkSession({
+        success: function () {
+          
+        },
+        fail: ()=> {
+          //登录失效
+          this.globalData.token=null
+          this.login()
+        }
+      })
+    }else{
+      this.login()
+    }
+  },
+  login(){
     wx.login({
       success: function (res) {
-        var code = res.code; // 微信登录接口返回的 code 参数，下面注册接口需要用到
-        wx.getUserInfo({
-          success: function (res) {
-            var iv = res.iv;
-            var encryptedData = res.encryptedData;
-            // 下面开始调用注册接口
-            wx.request({
-              url: 'https://api.it120.cc/' + that.globalData.subDomain +'/user/wxapp/register/complex',
-              data: {code:code,encryptedData:encryptedData,iv:iv}, // 设置请求的 参数
-              success: (res) =>{
-                wx.hideLoading();
-                that.login();
-              }
-            })
-          }
-        })
+        console.log(res)
+        req.post('/api/user/login/'+res.code)
+          .then(res=>res.data)
+          .then(data=>{
+            if(data.code === 0){
+              wx.setStorageSync('token', data.data)
+              req.header({token:data.data})
+              wx.reLaunch({
+                url: '/pages/index/index',
+                success: () => {
+
+                }
+              })
+            }
+          })
       }
     })
   },
   globalData:{
     userInfo:null,
-    subDomain: "mall"
+    subDomain: "mall",
+    token:null,
+    header:{token:''}
   }
 })

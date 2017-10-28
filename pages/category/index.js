@@ -1,5 +1,6 @@
 // pages/category/index.js
 import config from "../../config"
+import req from '../../utils/request.js'
 Page({
 
   /**
@@ -15,17 +16,16 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    wx.request({
-      url: config.serverUrl+"/category",
-      success:res=>{
-        if(res.data.code == 0){
+    req.get('/api/category')
+      .then(res=>res.data)
+      .then(data=>{
+        if (data.code === 0) {
           this.setData({
-            categories:res.data.data,
-            cates:res.data.data
+            categories: data.data,
+            cates: data.data
           })
         }
-      }
-    })
+      })
   },
 
   /**

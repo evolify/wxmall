@@ -1,5 +1,6 @@
 // pages/goodsList/index.js
 import config from '../../config'
+import req from '../../utils/request.js'
 Page({
 
   /**
@@ -15,19 +16,21 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    wx.request({
-      url: config.serverUrl + "/goods",
-      success: res => {
-        if (res.data.code == 0) {
-          this.setData({
-            goodsList: res.data.data
-          })
-        }
-      }
-    })
+    this.loadProducts()
     this.setData({
       cates:JSON.parse(options.cates)
     })
+  },
+  loadProducts() {
+    req.get('/api/product')
+      .then(res => res.data)
+      .then(data => {
+        if (data.code === 0) {
+          this.setData({
+            goodsList: data.data
+          })
+        }
+      })
   },
 
   /**

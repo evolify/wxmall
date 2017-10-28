@@ -1,6 +1,7 @@
 //index.js
 //获取应用实例
 import config from '../../config'
+import req from '../../utils/request'
 var app = getApp();
 var WxParse = require('../../wxParse/wxParse.js');
 
@@ -65,27 +66,26 @@ Page({
     })
 
     // 获取商品信息
-    wx.request({
-      url: config.serverUrl+'/goods/'+e.id,
-      success: res => {
-        if(res.data.code===0){
-          const data=res.data.data
+    req.get('/api/product/'+e.id)
+      .then(res=>res.data)
+      .then(data=>{
+        if(data.code === 0){
+          data=data.data
           this.setData({
-            id:data.id,
-            name:data.name,
-            no:data.no,
-            description:data.description,
-            category:data.category,
-            brand:data.brand,
-            images:data.images,
-            props:data.props,
-            goodsList:data.goodsList,
-            goods:data.goodsList[0],
-            optional:data.goodsList.length>1
+            id: data.id,
+            name: data.name,
+            no: data.no,
+            description: data.description,
+            category: data.category,
+            brand: data.brand,
+            images: data.images,
+            props: data.props,
+            goodsList: data.goodsList,
+            goods: data.goodsList[0],
+            optional: data.goodsList.length > 1
           })
         }
-      }
-    })
+      })
 
   },
 
@@ -114,7 +114,11 @@ Page({
     this.setData({
       shopType: "addShopCar"
     })
-    this.bindGuiGeTap();
+    if(this.data.optional){
+      this.bindGuiGeTap();
+    }else{
+      this.addShoppingCar()
+    }
   },
 
   /**
@@ -124,7 +128,11 @@ Page({
     this.setData({
       shopType: "tobuy"
     });
-    this.bindGuiGeTap();
+    if(this.data.optional){
+      this.bindGuiGeTap();
+    }else{
+      this.buyNow()
+    }
   },  
   /**
    * 规格选择弹出框
@@ -181,17 +189,10 @@ Page({
 	  * 立即购买
 	  */
   buyNow:function(){
-    //组建立即购买信息
-    var buyNowInfo = this.buliduBuyNowInfo();
-    // 写入本地存储
-    wx.setStorage({
-      key:"buyNowInfo",
-      data:buyNowInfo
-    })
     this.closePopupTap();
     const goods = this.data.goods
     wx.navigateTo({
-      url: "/pages/to-pay-order/index?orderType=buyNow &goodsId="+goods.id+"&count="+this.data.cound
+      url: "/pages/to-pay-order/index?orderType=buyNow&goodsId="+goods.id+"&count="+this.data.count
     })    
   },
   onShareAppMessage: function () {

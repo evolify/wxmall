@@ -1,5 +1,6 @@
 //index.js
 import config from '../../config'
+import req from '../../utils/request.js'
 var app = getApp()
 Page({
   data: {
@@ -38,14 +39,13 @@ Page({
       this.initEleWidth();
       var shoppingCar = wx.getStorageSync('shoppingCar');
       shoppingCar.forEach(item=>{
-        wx.request({
-          url: config.serverUrl+'/api/goods/'+item.goods.id,
-          success:(res=>{
-            if(res.data.code===0){
-              this.refreshData(shoppingCar,res.data.data)
+        req.get('/api/goods/'+item.goods.id)
+          .then(res=>res.data)
+          .then(data=>{
+            if (data.code === 0) {
+              this.refreshData(shoppingCar, data.data)
             }
           })
-        })
       })
       // this.updateData(shoppingCar,[])
   },
