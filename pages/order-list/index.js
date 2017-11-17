@@ -8,23 +8,46 @@ Page({
     statusList:["全部","待付款","待发货","待收货","已完成"],
     status:1,
     tabClass: ["", "", "", "", ""],
-    orderList:[]
+    orderList:[],
+
+    page: 0,
+    size: 20,
+    count: 0,
+    totalCount: 0,
+    totalPage: 0,
+    last: false,
+    first: false
   },
+
+  page({ size = 20, number = 0, numberOfElements = 0, totalElements = 0, totalPages = 0, first = true, last = false, }) {
+    this.setData({
+      size, last, first,
+      page: number,
+      count: numberOfElements,
+      totalCount: totalElements,
+      totalPage: totalPages
+    })
+    return this
+  },
+
   onShow(){
     this.loadOrderList(this.data.status)
   },
+  load(status,page){
+    return req.get('/api/order/byStatus/' + status+'?page='+page+'&size='+this.data.size)
+      .then(res => res.data.data)
+  },
   loadOrderList(status){
-    req.get('/api/order/byStatus/'+status)
-      .then(res=>res.data.data)
+    return this.load(status,0)
       .then(data=>{
         this.setData({
-          orderList:data
+          orderList:data.content
         })
+        this.page(data)
       })
   },
   statusTap:function(e){
      var status =  e.currentTarget.dataset.index;
-     console.log(status)
      this.loadOrderList(status)
      this.setData({
       status
@@ -51,7 +74,7 @@ Page({
           req.delete('/api/order/'+id)
             .then(res=>{
               wx.hideLoading()
-              this.loadOrderList()
+              this.loadOrderList(this.data.status)
             })
         }
       }
@@ -62,6 +85,23 @@ Page({
     const {id,price}=e.currentTarget.dataset
     wxpay.wxpay(app, price, id, "/pages/order-list/index");
   },
+  confirmOrder(e){
+    const { id } = e.currentTarget.dataset
+    req.put('/api/order/confirm/'+id)
+      .then(res=>{
+        wx.showToast({
+          title: '确认收货',
+          icon:'success'
+        })
+        this.loadOrderList(this.data.status)
+      })
+  },
+  refund(e){
+    const { id } = e.currentTarget.dataset
+    wx.navigateTo({
+      url: '/pages/refund/index?id='+id,
+    })
+  },
   onLoad:function(options){
     // 生命周期函数--监听页面加载
    
@@ -69,35 +109,6 @@ Page({
   onReady:function(){
     // 生命周期函数--监听页面初次渲染完成
  
-  },
-  getOrderStatistics : function () {
-    var that = this;
-    wx.request({
-      url: 'https://api.it120.cc/' + app.globalData.subDomain + '/order/statistics',
-      data: { token: app.globalData.token },
-      success: (res) => {
-        wx.hideLoading();
-        if (res.data.code == 0) {
-          var tabClass = that.data.tabClass;
-          if (res.data.data.count_id_no_pay > 0) {
-            tabClass[1] = "red-dot"
-          }
-          if (res.data.data.count_id_no_transfer > 0) {
-            tabClass[2] = "red-dot"
-          }
-          if (res.data.data.count_id_no_confirm > 0) {
-            tabClass[3] = "red-dot"
-          }
-          if (res.data.data.count_id_success > 0) {
-            tabClass[4] = "red-dot"
-          }
-
-          that.setData({
-            tabClass: tabClass,
-          });
-        }
-      }
-    })
   },
   onHide:function(){
     // 生命周期函数--监听页面隐藏
@@ -107,12 +118,28 @@ Page({
     // 生命周期函数--监听页面卸载
  
   },
-  onPullDownRefresh: function() {
-    // 页面相关事件处理函数--监听用户下拉动作
-   
+  /**
+   * 页面相关事件处理函数--监听用户下拉动作
+   */
+  onPullDownRefresh: function () {
+    wx.showLoading()
+    this.loadOrderList(this.data.status)
+      .then(res => {
+        wx.hideLoading()
+        wx.stopPullDownRefresh()
+      })
   },
   onReachBottom: function() {
     // 页面上拉触底事件的处理函数
-  
+    const{status,last,page,orderList}=this.data
+    if(!last){
+      this.load(status,page+1)
+        .then(data=>{
+          this.setData({
+            orderList: [...orderList,...data.content]
+          })
+          this.page(data)
+        })
+    }
   }
 })

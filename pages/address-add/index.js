@@ -25,6 +25,7 @@ Page({
     district:'镇海区',
     address:null,
     zipCode:null,
+    userId:null
   },
 
 
@@ -32,7 +33,7 @@ Page({
     console.log(options)
     const {id}=options
     if(id){
-      req.get('/api/address /'+id)
+      req.get('/api/address/'+id)
         .then(res=>res.data)
         .then(data=>{
           if (data.code === 0) {
@@ -45,7 +46,8 @@ Page({
               city: data.data.city,
               district: data.data.district,
               address: data.data.address,
-              zipCode: data.data.zipCode
+              zipCode: data.data.zipCode,
+              userId:data.data.userId
             })
           }
         })
@@ -66,7 +68,7 @@ Page({
     var address = e.detail.value.address;
     var phone = e.detail.value.phone;
     var zipCode = e.detail.value.zipCode;
-    const {id,province,city,district,edit}=this.data
+    const {id,province,city,district,edit,userId}=this.data
 
     if (!contact || !phone ||!province){
       wx.showModal({
@@ -77,7 +79,7 @@ Page({
       return
     }
     if(edit){
-      this.update(id, contact, phone, province, city, district, address, zipCode)
+      this.update(id, contact, phone, province, city, district, address, zipCode,userId)
     }else{
       this.add(contact, phone, province, city, district, address, zipCode)
     }
@@ -93,8 +95,8 @@ Page({
       })
   },
 
-  update(id,contact, phone, province, city, district, address, zipCode){
-    req.put('/api/address/'+id, { id, contact, phone, province, city, district, address, zipCode })
+  update(id,contact, phone, province, city, district, address, zipCode,userId){
+    req.put('/api/address/'+id, { id, contact, phone, province, city, district, address, zipCode,userId })
       .then(res => res.data)
       .then(data => {
         if (data.code === 0) {

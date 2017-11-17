@@ -1,6 +1,8 @@
 {
   "pages": [
     "pages/index/index",
+    "pages/user/index",
+    "pages/refund/index",
     "pages/category/index",
     "pages/goods-details/index",
     "pages/shop-cart/index",
@@ -10,13 +12,16 @@
     "pages/order-list/index",
     "pages/order-details/index",
     "pages/wuliu/index",
-    "pages/goodsList/index"
+    "pages/goodsList/index",
+    "pages/address/index",
+    "pages/user-type/index"
   ],
   "window": {
     "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#fff",
+    "navigationBarBackgroundColor": "#009999",
     "navigationBarTitleText": "WeChat",
-    "navigationBarTextStyle": "black"
+    "navigationBarTextStyle": "white",
+    "enablePullDownRefresh": true
   },
   "tabBar": {
     "color": "#6e6d6b",
@@ -44,10 +49,10 @@
         "text": "购物车"
       },
       {
-        "pagePath": "pages/order-list/index",
-        "iconPath": "images/nav/order-off.png",
-        "selectedIconPath": "images/nav/order-on.png",
-        "text": "订单"
+        "pagePath": "pages/user/index",
+        "iconPath": "images/nav/user-off.png",
+        "selectedIconPath": "images/nav/user-on.png",
+        "text": "我"
       }
     ]
   }

@@ -9,7 +9,7 @@
               <icon type='success' size='18' hidden='{{deliverType !== 0}}'/>
             </view>
             <view class='option post' bindtap='tapPost'>
-              <label class='label'>邮寄</label>
+              <label class='label'>邮寄 （运费 ￥20）</label>
               <icon type='success' size='18' hidden='{{deliverType !== 1}}'/>
             </view>
           </view>
@@ -54,6 +54,32 @@
             </view>
         </view>
      </view>
+
+    <view class='weui-cells'>
+      <view class='weui-cell invoice'>
+        <label class='label'>发票类型</label>
+        <picker class='value' bindchange='onInvoiceTypeChange' range="{{invoiceOptions}}">
+          <label>{{invoiceOptions[invoiceType]}}</label>
+        </picker>
+        <label class='trigger'>></label>
+      </view>
+      
+      <view class='weui-cell' wx:if="{{invoiceType == 1}}">
+        <label class='label'>发票抬头</label>
+        <input class='value' value="{{invoiceTitle}}" bindinput='onInvoiceTitleChange' placeholder='请输入发票抬头'/>
+      </view>
+      <block wx:if="{{invoiceType == 2}}">
+        <view class='weui-cell'>
+          <label class='label'>企业名称</label>
+          <input class='value' value="{{invoiceTitle}}" bindinput='onInvoiceTitleChange' placeholder='请输入企业名称'/>
+        </view>      
+        <view class='weui-cell'>
+          <label class='label'>企业税号</label>
+          <input class='value' value="{{tfn}}" bindinput='onTfnChange' placeholder='请输入企业税号'/>
+        </view>
+      </block>
+    </view>
+
      <view class="peisong-way">
         <!-- <view class="row-box" wx:if="{{isNeedLogistics > 0}}">
             <view class="row-label">配送方式</view>

@@ -55,7 +55,7 @@ Page({
     this.loadProducts()
   },
   loadProducts(){
-    req.get('/api/product')
+    return req.get('/api/product/latest')
       .then(res => res.data)
       .then(data => {
         if (data.code === 0) {
@@ -66,7 +66,7 @@ Page({
       })
   },
   loadBanners(){
-    req.get('/api/banner')
+    return req.get('/api/banner')
       .then(res=>res.data)
       .then(data=>{
         if(data.code === 0){
@@ -75,5 +75,25 @@ Page({
           })
         }
       })
+  },
+  /**
+ * 页面相关事件处理函数--监听用户下拉动作
+ */
+  onPullDownRefresh() {
+    wx.showLoading({
+      title: '',
+    })
+    this.loadBanners()
+      .then(()=>this.loadProducts()
+          .then(()=>{
+            wx.hideLoading()
+            wx.stopPullDownRefresh()
+          }))
+  },
+
+  /**
+   * 页面上拉触底事件的处理函数
+   */
+  onReachBottom: function () {
   },
 })

@@ -16,9 +16,13 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    req.get('/api/category')
-      .then(res=>res.data)
-      .then(data=>{
+    this.loadCategories()
+  },
+
+  loadCategories(){
+    return req.get('/api/category')
+      .then(res => res.data)
+      .then(data => {
         if (data.code === 0) {
           this.setData({
             categories: data.data,
@@ -60,7 +64,12 @@ Page({
    * 页面相关事件处理函数--监听用户下拉动作
    */
   onPullDownRefresh: function () {
-  
+    wx.showLoading()
+    this.loadCategories()
+      .then(()=>{
+        wx.hideLoading()
+        wx.stopPullDownRefresh()
+      })
   },
 
   /**
@@ -77,11 +86,18 @@ Page({
   
   },
 
-  toGoodsList(){
-    let cates = this.data.selectedCates.map(c => c.id)
-    
+  tapAll(){
+    if (this.data.selectedCates.length > 0) {
+      const {id,name} = this.data.selectedCates[this.data.selectedCates.length - 1]
+      this.toGoodsList(id,name)
+    } else {
+      this.toGoodsList(0,'全部分类')
+    }
+  },
+
+  toGoodsList(id,name){
     wx.navigateTo({
-      url: '/pages/goodsList/index?cates='+JSON.stringify(cates),
+      url: '/pages/goodsList/index?cateId='+id+'&cateName='+name,
     })
   },
 
@@ -100,10 +116,14 @@ Page({
     }
   },
   tapCate:function(e){
-    const cate = e.target.dataset.cate
-    this.setData({
-      cates:cate.children || [],
-      selectedCates:[...this.data.selectedCates,cate]
-    })
+    const cate = e.currentTarget.dataset.cate
+    if(cate.children && cate.children.length>0){
+      this.setData({
+        cates:cate.children || [],
+        selectedCates:[...this.data.selectedCates,cate]
+      })
+    }else{
+      this.toGoodsList(cate.id,cate.name)
+    }
   }
 })

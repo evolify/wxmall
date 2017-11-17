@@ -2,6 +2,14 @@ page{
   min-height: 100%;
   background-color: #F2f2f2;
 }
+.container{
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+.status{
+  font-size:30rpx;
+}
 .sec-wrap{
     background-color: #fff;
     margin-top: 20rpx;
@@ -250,6 +258,11 @@ page{
 .goods-info .row-box .right-text{
     text-align: right;
 }
+.item{
+  display: flex;
+  justify-content: space-between;
+}
+
 .jiesuan-box{
     display: flex;
     justify-content: space-between;

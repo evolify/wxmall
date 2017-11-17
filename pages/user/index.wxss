@@ -1,0 +1,31 @@
+/* pages/user/index.wxss */
+.container{
+  align-items: stretch;
+}
+.row{
+  display: flex;
+  flex-flow:row nowrap;
+  align-items:center;
+  justify-content: space-between;
+  padding:30rpx;
+}
+.basic-info{
+  background: #009999;
+  color:white;
+}
+.avatar{
+  width:100rpx;
+  height: 100rpx;
+  border-radius:50%;
+}
+.nick-name{
+  flex-grow:1;
+  margin-left:100rpx;
+  font-size:40rpx;
+}
+.weui-cells{
+  margin:0;
+}
+.weui-cell{
+  justify-content: space-between;
+}

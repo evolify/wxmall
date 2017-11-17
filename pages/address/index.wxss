@@ -1,0 +1,35 @@
+/* pages/address/index.wxss */
+.container{
+  align-items: stretch;
+}
+.address-item{
+  padding:20rpx 30rpx;
+  display: flex;
+  flex-direction: column;
+  align-items:flex-start;
+  position:relative;
+}
+.address-item .row{
+  display: flex;
+  flex-flow:row wrap;
+  padding:10rpx;
+}
+.address-item .row .phone{
+  margin-left:40rpx;
+}
+.address-item .row.address{
+  font-size:30rpx;
+}
+.address-item .row.address .zip-code{
+  margin-left:30rpx;
+}
+.address-item .btn.edit{
+  position: absolute;
+  top:30rpx;
+  right:50rpx;
+  color:#0099dd;
+}
+.btn.add{
+  width: 720rpx;
+  margin-top:30rpx;
+}

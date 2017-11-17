@@ -62,15 +62,20 @@ Page({
         that.setData({
           shoppingCar:res.data
         });
-      } 
+      }
     })
 
     // 获取商品信息
-    req.get('/api/product/'+e.id)
-      .then(res=>res.data)
-      .then(data=>{
-        if(data.code === 0){
-          data=data.data
+    this.details(e.id)
+
+  },
+
+  details(id){
+    return req.get('/api/product/' + id)
+      .then(res => res.data)
+      .then(data => {
+        if (data.code === 0) {
+          data = data.data
           this.setData({
             id: data.id,
             name: data.name,
@@ -86,7 +91,6 @@ Page({
           })
         }
       })
-
   },
 
   /**
@@ -94,7 +98,7 @@ Page({
    */
   selectGoods(e){
     this.setData({
-      goods:e.target.dataset.goods
+      goods: e.currentTarget.dataset.goods
     })
   },
 
@@ -206,5 +210,17 @@ Page({
         // 转发失败
       }
     }
-  }
+  },
+
+  /**
+   * 页面相关事件处理函数--监听用户下拉动作
+   */
+  onPullDownRefresh: function () {
+    wx.showLoading()
+    this.details(this.data.id)
+      .then(res => {
+        wx.hideLoading()
+        wx.stopPullDownRefresh()
+      })
+  },
 })

@@ -1,5 +1,7 @@
 .container{
     background-color:#F2f2f2;
+    font-size:30rpx;
+    padding-bottom:100rpx;
 }
 .address-box{
     width: 100%;
@@ -13,12 +15,12 @@
     padding-left: 100rpx;
 }
 .show-address .name-tel{
-    font-size: 28rpx;
+    font-size: 30rpx;
     color: #000;
     padding: 30rpx 0 20rpx 0;
 }
 .show-address .addr-text{
-    font-size: 24rpx;
+    font-size: 30rpx;
     color: #888;
     padding-bottom: 34rpx;
     line-height: 36rpx;
@@ -28,14 +30,14 @@ form{
 }
 .card{
     width:100%;
-     display: flex; 
+    display: flex; 
     flex-direction: column;
     background-color: #fff;
     margin-bottom: 20rpx;
 }
 .card-title{
     width:100%;
-    font-size: 28rpx;
+    font-size: 35rpx;
     color: #000;
     padding: 30rpx 0 25rpx 30rpx;
     border-bottom:1rpx solid #eee;
@@ -66,7 +68,7 @@ form{
   flex-flow:row wrap;
 }
 .address-details .row .phone{
-  margin-left:40rpx;
+  margin-left:35rpx;
 }
 .address-details .row.address{
   font-size:30rpx;
@@ -85,7 +87,7 @@ form{
     /* background:  */
 }
 .add-address .title{
-    font-size: 32rpx;
+    font-size: 30rpx;
     color: #000;
     padding: 30rpx; 
 }
@@ -95,7 +97,7 @@ form{
     margin-bottom: 20rpx;
 }
 .goods-list .list-title{
-    font-size: 28rpx;
+    font-size: 35rpx;
     color: #000;
     padding: 30rpx 0 25rpx 30rpx;
 }
@@ -131,7 +133,7 @@ form{
  }
 .a-goods .text-box .arow .goods-name{
      width: 360rpx;
-     font-size:26rpx;
+     font-size:30rpx;
      height: 74rpx;
      color:#000000;
      line-height: 1.6;
@@ -141,12 +143,12 @@ form{
     margin-bottom: 30rpx;
 }
 .a-goods .text-box .arow .goods-price{
-    font-size:26rpx;
+    font-size:30rpx;
     color:#000000;
     align-self: flex-start;
 }
 .a-goods .text-box .arow .goods-label{
-    font-size: 26rpx;
+    font-size: 30rpx;
     color: #999;
 }
 .a-goods .text-box .arow .goods-num{
@@ -175,17 +177,15 @@ form{
     border-bottom: 1rpx solid #eee;
 }
 .peisong-way .row-label{
-    font-size: 28rpx;
     color: #000;
 }
 .peisong-way .right-text{
-    font-size: 28rpx;
+    font-size: 35rpx;
     color: #666;
     padding-right: 30rpx;
 }
 .peisong-way .liuyan{
     width: 510rpx;
-    font-size: 28rpx;
 }
 .goods-info{
     width: 100%;
@@ -200,7 +200,6 @@ form{
     align-items: center;
     box-sizing: border-box;
     padding: 24rpx 30rpx 12rpx 30rpx;
-    font-size: 28rpx;
     color: #000;
 }
 .goods-info .row-box .right-text{
@@ -216,6 +215,7 @@ form{
     left: 0;
     border-top:1px solid #eee; 
     background-color: #fff;
+    z-index: 100;
 }
 .jiesuan-box .to-pay-btn{
     width:250rpx;
@@ -223,7 +223,6 @@ form{
     height: 100%;
     line-height: 100rpx;
     background-color: #e64340;
-    font-size:32rpx;
     color:#ffffff;
     border-radius: 0;
 }
@@ -234,11 +233,19 @@ form{
     justify-content:flex-end;
     line-height: 100rpx;
     padding: 0 30rpx 0 0;
-    font-size:28rpx;
+    font-size:30rpx;
     box-sizing: border-box;
 }
 
 .jiesuan-box .total{
     color: #e64340;
     text-align: right;
+}
+
+.weui-cell{
+  font-size:35rpx;
+}
+.value{
+  flex-grow:1;
+  padding:0 30rpx;
 }

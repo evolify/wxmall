@@ -8,40 +8,80 @@ Page({
   data: {
     goodsList:[],
 
-    totalPrice:0,
+    goodsPrice:0,//商品价格
+    totalPrice:0,//订单总价格，包含运费
     orderType:"", //订单类型，购物车下单或立即支付下单，默认是购物车，
 
     serverUrl:config.serverUrl,
     deliverType:0, //0 渔山岛自提，1 邮寄
+    freight:0, //运费 如果是快递，运费为20
+    invoiceType:0, //发票类型，0：不需要开票，1：个人发票，2：公司发票
+    invoiceTitle:null,//发票抬头
+    tfn:null,//公司税号
     addressList:[],
     addressArray:[],//picker中用到，tx实力有点low。。。
     address:null,
-    tips:''
+    tips:'',
+    invoiceOptions:['不开发票','个人发票','企业发票'],
   },
 
   
   onLoad: function (options) {
-    // that.setData({
-    //   isNeedLogistics: 1,
-    //   orderType: options.orderType
-    // });
     const {orderType,goodsId,count}=options
     this.initGoodsList(orderType,goodsId,count)
+    this.initInvoice()
+  },
+
+  initInvoice(){
+    req.get('/api/user/type')
+      .then(res=>res.data.data)
+      .then(data=>{
+        if(data.userType===1){
+          this.setData({
+            invoiceType:2,
+            invoiceTitle: data.companyName,
+            tfn:data.tfn
+          })
+        }else{
+          this.setData({
+            invoiceType:0
+          })
+        }
+      })
   },
 
   tapFetch(){
     this.setData({
-      deliverType:0
+      deliverType:0,
+      freight:0,
+      totalPrice:this.data.goodsPrice
     })
   },
   tapPost() {
     this.setData({
-      deliverType: 1
+      deliverType: 1,
+      freight:20,
+      totalPrice:this.data.goodsPrice+20
     })
   },
   bindAddressChange(e){
     this.setData({
       address:this.data.addressList[e.detail.value]
+    })
+  },
+  onInvoiceTypeChange(e){
+    this.setData({
+      invoiceType:e.detail.value
+    })
+  },
+  onInvoiceTitleChange(e){
+    this.setData({
+      invoiceTitle:e.detail.value
+    })
+  },
+  onTfnChange(e){
+    this.setData({
+      tfn:e.detail.value
     })
   },
 
@@ -60,18 +100,22 @@ Page({
           return list
         })
         .then(list=>{
+          const price = list[0].goods.price * list[0].count
           this.setData({
             goodsList:list,
-            totalPrice: list[0].goods.price * list[0].count
+            goodsPrice: price,
+            totalPrice:price+this.data.freight
           })
         })
     }else{
-      list=wx.getStorageSync('toByGoodsList')      
+      list=wx.getStorageSync('toByGoodsList')     
+      const price = list.length > 1
+        ? list.reduce((v1, v2) => v1.goods.price * v1.count + v2.goods.price * v2.count)
+        : list[0].goods.price * list[0].count 
       this.setData({
         goodsList:list,
-        totalPrice:list.length>1
-          ?list.reduce((v1,v2)=>v1.goods.price*v1.count+v2.goods.price*v2.count)
-          :list[0].goods.price*list[0].count
+        goodsPrice:price,
+        totalPrice:price+this.data.freight
       })
     }
   },
@@ -105,6 +149,10 @@ Page({
     req.post('/api/order',{
         price: this.data.totalPrice,
         deliverType: this.data.deliverType,
+        freight:this.data.freight,
+        invoiceType:this.data.invoiceType,
+        invoiceTitle:this.data.invoiceTitle,
+        tfn:this.data.tfn,
         addressId: this.data.deliverType === 1 ? this.data.address.id : null,
         orderContents: this.data.goodsList.map(o => ({
           goodsId: o.goods.id,
@@ -116,7 +164,7 @@ Page({
       .then(data=>{
         wx.hideLoading()
         this.updateShoppingCar()
-        wx.reLaunch({
+        wx.redirectTo({
           url: "/pages/order-list/index"
         });
       })
@@ -132,74 +180,6 @@ Page({
       })
       wx.removeStorageSync('toByGoodsList')
     }
-  },
-
-  createOrder:function (e) {
-    wx.showLoading();
-    var that = this;
-    var loginToken = app.globalData.token // 用户登录 token
-    var remark = e.detail.value.remark; // 备注信息
-
-    var postData = {
-      token: loginToken,
-      goodsJsonStr: that.data.goodsJsonStr,
-      remark: remark
-    };
-    if (that.data.isNeedLogistics > 0) {
-      if (!that.data.curAddressData) {
-        wx.hideLoading();
-        wx.showModal({
-          title: '错误',
-          content: '请先设置您的收货地址！',
-          showCancel: false
-        })
-        return;
-      }
-      postData.provinceId = that.data.curAddressData.provinceId;
-      postData.cityId = that.data.curAddressData.cityId;
-      if (that.data.curAddressData.districtId) {
-        postData.districtId = that.data.curAddressData.districtId;
-      }
-      postData.address = that.data.curAddressData.address;
-      postData.linkMan = that.data.curAddressData.linkMan;
-      postData.mobile = that.data.curAddressData.mobile;
-      postData.code = that.data.curAddressData.code;
-    }
-    if (that.data.curCoupon) {
-      postData.couponId = that.data.curCoupon.id;
-    }
-
-
-    wx.request({
-      url: 'https://api.it120.cc/'+ app.globalData.subDomain +'/order/create',
-      method:'POST',
-      header: {
-        'content-type': 'application/x-www-form-urlencoded'
-      },
-      data: postData, // 设置请求的 参数
-      success: (res) =>{
-        wx.hideLoading();
-        console.log(res.data);
-        if (res.data.code != 0) {
-          wx.showModal({
-            title: '错误',
-            content: res.data.msg,
-            showCancel: false
-          })
-          return;
-        }
-        
-        if ("buyNow" != that.data.orderType) {
-          // 清空购物车数据
-          wx.removeStorageSync('shopCarInfo');
-        }
-
-        // 下单成功，跳转到订单管理界面
-        wx.reLaunch({
-          url: "/pages/order-list/index"
-        });
-      }
-    })
   },
 
   addAddress: function () {
@@ -221,9 +201,10 @@ Page({
       url: '/pages/address-add/index?id='+address.id,
     })
   },
-  // selectAddress: function () {
-  //   wx.navigateTo({
-  //     url:"/pages/select-address/index"
-  //   })
-  // },
+  /**
+ * 页面相关事件处理函数--监听用户下拉动作
+ */
+  onPullDownRefresh: function () {
+    wx.stopPullDownRefresh()
+  },
 })

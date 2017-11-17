@@ -6,6 +6,7 @@ App({
     wx.setStorageSync('mallName','易捷商城')
     this.configReq()
     this.beforeLogin();
+    this.getUserInfo()
   },
   configReq(){
     req.baseUrl(config.serverUrl)
@@ -65,6 +66,18 @@ App({
             }
           })
       }
+    })
+  },
+  getUserInfo(success){
+    wx.getUserInfo({
+      withCredentials: true,
+      lang: '',
+      success: res=> {
+        this.globalData.userInfo=res.userInfo
+        success && success(res.userInfo)
+      },
+      fail: function(res) {},
+      complete: function(res) {},
     })
   },
   globalData:{

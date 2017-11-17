@@ -1,0 +1,21 @@
+<!--pages/user/index.wxml-->
+<view class='container'>
+  <view class='basic-info row'>
+    <image class='avatar' mode='aspectFill' src='{{avatarUrl}}'></image>
+    <label class='nick-name'>{{nickName}}</label>
+  </view>
+  <view class='weui-cells'>
+    <view class='weui-cell' bindtap='toOrderList'>
+      我的订单
+      <label class='icon'>></label>
+    </view>
+    <view class='weui-cell' bindtap='toAddressList'>
+      我的收货地址
+      <label class='icon'>></label>
+    </view>
+    <view class='weui-cell' bindtap='toUserType'>
+      会员身份
+      <label class='icon'>></label>
+    </view>
+  </view>
+</view>

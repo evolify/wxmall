@@ -31,9 +31,14 @@
             <view class="price-box">
                 <view class="total-price">合计：¥ {{item.price}}</view>
                 <view class="btn cancel-btn" hidden="{{item.status === 1? false : true}}" bindtap="cancelOrderTap"  data-id="{{item.id}}">取消订单</view>
-                <view class="btn topay-btn" hidden="{{item.status==1? false : true}}" bindtap="toPayTap" data-id="{{item.id}}" data-price="{{item.price}}">马上付款</view>        
+                <view class="btn topay-btn" hidden="{{item.status==1? false : true}}" bindtap="toPayTap" data-id="{{item.id}}" data-price="{{item.price}}">马上付款</view>  
+                <view class="btn topay-btn" hidden="{{item.status==3? false : true}}" bindtap="confirmOrder" data-id="{{item.id}}" data-price="{{item.price}}">确认收货</view>      
+                <view class="btn topay-btn" hidden="{{item.status==4? false : true}}" bindtap="refund" data-id="{{item.id}}">申请退款</view>      
             </view>  
         </view>
 
     </view>
+    
+  <view class='page-tips' hidden='{{last}}'>数据加载中...</view>
+  <view class='page-tips' hidden='{{!last}}'>没有更多数据了</view>
 </view>

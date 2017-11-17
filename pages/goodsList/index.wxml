@@ -1,15 +1,28 @@
 <!--pages/goodsList/index.wxml-->
 <view class='container'>
+  <view class='search-wrapper'>
   <view class='search-box'>
-    <input class='input-keywords' placeholder='输入关键字查找'></input>
-    <label size='mini' class='btn-search'><icon type='search'></icon></label>
+    <input class='input-keywords' bindinput='onKeywordsChange' placeholder='输入关键字查找'></input>
+    <label size='mini' class='btn-search' bindtap='onSearch'><icon type='search'></icon></label>
+  </view>
   </view>
   <view class='goods-list'>
     <view class='goods-item' wx:for='{{goodsList}}' wx:key="unique" data-id="{{item.id}}" bindtap='toDetails'>
       <image class='goods-img'
         mode="aspectFill"
         src="{{serverUrl+'/'+item.img}}" />
-      <label>{{item.name}}</label>
+      <view class='right'>
+        <view class='row'>
+          <label class='name'>{{item.name}}</label>
+          <label class='spec'>{{item.spec}}</label>
+        </view>
+        <view class='row'>
+          <label class='price'>￥{{item.price}}</label>
+          <label class='stock'>库存：{{item.stock}}</label>
+        </view>
+      </view>
     </view>
   </view>
+  <view class='page-tips' hidden='{{last}}'>数据加载中...</view>
+  <view class='page-tips' hidden='{{!last}}'>没有更多数据了</view>
 </view>

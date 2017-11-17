@@ -1,0 +1,29 @@
+<!--pages/user-type/index.wxml-->
+<view class='container'>
+  <view class='weui-cells'>
+    <view class='weui-cell user-type' data-type='0' bindtap='setType'>
+      个人
+      <icon type='success' size='18' hidden='{{userType !== 0}}'/>
+    </view>
+    <view class='weui-cell user-type' data-type='1' bindtap='setType'>
+      企业
+      <icon type='success' size='18' hidden='{{userType !== 1}}'/>
+    </view>
+    <block wx:if="{{userType === 1}}">
+      <view class='weui-cell'>
+        <label>企业名称</label>
+        <input placeholder='请输入企业名称' value='{{companyName}}' bindinput='onNameChange'></input>
+      </view>
+      <view class='weui-cell'>
+        <label>企业税号</label>
+        <input placeholder='请输入企业税号' value="{{tfn}}" bindinput='onTfnChange'></input>
+      </view>
+    </block>
+  </view>
+
+  <view class='row'>
+    <button class='btn cancel' type='warn' bindtap='cancel'>取消</button>
+    <button class='btn confirm' type='primary' bindtap='submit'>确认</button>
+  </view>
+
+</view>

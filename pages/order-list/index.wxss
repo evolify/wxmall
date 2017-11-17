@@ -1,3 +1,6 @@
+page{
+    background-color: #F2f2f2;
+}
 .container{
     width: 100%;
     background-color: #F2f2f2;
@@ -151,4 +154,8 @@
 .a-order .price-box .topay-btn{
     border:1px solid #e64340;
     color: #e64340;
+}
+.page-tips{
+  width:100%;
+  text-align:center;
 }

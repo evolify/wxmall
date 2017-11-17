@@ -1,0 +1,17 @@
+<!--pages/address/index.wxml-->
+<view class='container'>
+  <view class='weui-cells'>
+    <view class='weui-cell address-item' wx:for="{{addressList}}">
+      <view class='contact row'>
+        <label class='name'>{{item.contact}}</label>
+        <label class='phone'>{{item.phone}}</label>
+      </view>
+      <view class='address row'>
+        <label>{{item.province}} {{item.city}} {{item.district}} {{item.address}}</label>
+        <label class='zip-code'>{{item.zipCode}}</label>
+      </view>
+      <label class='btn edit' catchtap='editAddress' data-id="{{item.id}}" bindtap='editAddress'>编辑</label>
+    </view>
+  </view>
+  <button type='primary' bindtap='toAddAddress' class='btn add'>添加收货地址</button>
+</view>

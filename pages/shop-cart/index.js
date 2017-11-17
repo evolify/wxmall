@@ -136,7 +136,7 @@ Page({
     }
   },
   delItem:function(e){
-    const id = e.target.dataset.id
+    const id = e.currentTarget.dataset.id
     const list=this.data.list.filter(item=>item.goods.id!==id)
     const ids=this.data.selectedIds.filter(i=>i!==id)
     this.updateData(list,ids)
@@ -216,7 +216,17 @@ Page({
       wx.navigateTo({
         url:"/pages/to-pay-order/index?goodsIds="+JSON.stringify(this.data.selectedIds)
       })
-    }
+    },
+
+/**
+ * 页面相关事件处理函数--监听用户下拉动作
+ */
+  onPullDownRefresh: function () {
+    wx.showLoading()
+    this.onLoad()
+    wx.hideLoading()
+    wx.stopPullDownRefresh()
+  },
 
 
 

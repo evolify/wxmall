@@ -1,0 +1,40 @@
+<!--pages/refund/index.wxml-->
+<view class='container'>
+  <view class="goods-list">
+    <view class="list-title">商品信息</view>
+    <view class="a-goods" wx:for="{{orderContent}}" wx:key="{{index}}">
+        <view class="img-box">
+            <image src="{{serverUrl+'/'+item.goods.img}}" class="img" />
+        </view>
+        <view class="text-box">
+            <view class="arow arow01">
+                <view class="goods-name">{{item.goods.name}}</view>
+                <view class="goods-price">¥ {{item.goods.price}}</view>
+            </view>
+            <view class="arow">
+                <view class="goods-label">{{item.goods.spec}}</view>
+                <view class="goods-num">x {{item.count}}</view>
+            </view>
+        </view>
+    </view>
+  </view>
+
+  <view class='card reasons'>
+    <label class='card-header'>退款理由</label>
+    <view class='weui-cells'>
+      <view class='weui-cell reason-item' bindtap='tapDefaultReason'>
+        {{defaultReasonStr}}
+        <icon class='icon' type='success' size='18' hidden='{{!defaultReason}}'/>
+      </view>
+      <view class='weui-cell reason-item' bindtap='tapInputReason'>
+        其他
+        <input class='input' placeholder='输入理由' value='{{reason}}' bindinput='onReasonChange'/>
+        <icon class='icon' type='success' size='18' hidden='{{defaultReason}}'/>
+      </view>
+    </view>
+  </view>
+
+  <view class='footer'>
+    <view class='btn submit' bindtap='submit'>提交申请</view>
+  </view>
+</view>
