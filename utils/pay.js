@@ -15,7 +15,7 @@ function wxpay(app, price, id, redirectUrl) {
         },
         success: function () {
           wx.showToast({ title: '支付成功' })
-          wx.reLaunch({
+          wx.redirectTo({
             url: redirectUrl
           });
         }

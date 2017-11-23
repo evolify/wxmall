@@ -58,13 +58,14 @@
          </view>
     </view>
     <view class="footer-box">        
-        <view class="contact">
+        <view class="contact" hidden='true'>
           <contact-button style="opacity:0;position:absolute;" type="default-dark"  session-from="weapp" size="27"></contact-button>
           客服
         </view>
         <view class="shop-cart-btn" bindtap="toShoppingCar">
-            <view class="shop-num">({{shopNum}})</view>
-            购物车
+            <view class="shop-num">({{shoppingCar.length}})</view>
+            <image class='icon' mode='aspectFit' src='../../images/icon-cart.png'></image>
+            <label class='label'>购物车</label>
         </view>
         <view class="join-shop-cart" bindtap="toAddShoppingCar">加入购物车</view>
         <view class="now-buy" bindtap="toBuy">立即购买</view>
