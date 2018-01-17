@@ -9,6 +9,9 @@
         <image src="/images/no-order.png" class="no-order-img"></image>
         <view class="text">暂无订单</view>
     </view>
+    <view class='tips' hidden="{{status===1 && orderList.length>0 ? false : true}}">
+      请在30分钟内付款，否则订单将被取消。
+    </view>
     <view class="order-list" hidden="{{orderList.length>0 ? false : true}}">
         <view class="a-order" wx:for-items="{{orderList}}" wx:key="{{index}}">
             <view class="order-date">

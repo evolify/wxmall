@@ -17,12 +17,18 @@ Page({
     freight:0, //运费 如果是快递，运费为20
     invoiceType:0, //发票类型，0：不需要开票，1：个人发票，2：公司发票
     invoiceTitle:null,//发票抬头
-    tfn:null,//公司税号
+    tfn: null,//公司税号    tfn:'',
+    companyName: '',
+    companyPhone: '',
+    companyAddress: '',
+    bank: '',
+    bankAccount: '',
+    bankAddress: '',
     addressList:[],
-    addressArray:[],//picker中用到，tx实力有点low。。。
+    addressArray:[],//picker中用到
     address:null,
     tips:'',
-    invoiceOptions:['不开发票','个人发票','企业发票'],
+    invoiceOptions:['不开发票','个人发票','增值税普通发票', '增值税专用发票'],
   },
 
   
@@ -36,11 +42,14 @@ Page({
     req.get('/api/user/type')
       .then(res=>res.data.data)
       .then(data=>{
+        const {name,tfn,companyName,companyPhone,companyAddress,bank,bankAccount,bankAddress}=data
+        this.setData({
+          invoiceTitle:name,
+          tfn, companyName, companyPhone, companyAddress, bank, bankAccount, bankAddress
+        })
         if(data.userType===1){
           this.setData({
-            invoiceType:2,
-            invoiceTitle: data.companyName,
-            tfn:data.tfn
+            invoiceType:2
           })
         }else{
           this.setData({
@@ -58,10 +67,11 @@ Page({
     })
   },
   tapPost() {
+    const freight = this.data.goodsPricerice < 3000 ? 20 : 0
     this.setData({
       deliverType: 1,
-      freight:20,
-      totalPrice:this.data.goodsPrice+20
+      freight,
+      totalPrice:this.data.goodsPrice+freight
     })
   },
   bindAddressChange(e){
@@ -84,6 +94,36 @@ Page({
       tfn:e.detail.value
     })
   },
+  onCompanyNameChange(e){
+    this.setData({
+      companyName:e.detail.value
+    })
+  },
+  onCompanyPhoneChange(e){
+    this.setData({
+      companyPhone:e.detail.value
+    })
+  },
+  onCompanyAddressChange(e){
+    this.setData({
+      companyAddress:e.detail.value
+    })
+  },
+  onBankChange(e){
+    this.setData({
+      bank:e.detail.value
+    })
+  },
+  onBankAccountChange(e){
+    this.setData({
+      bankAccount:e.detail.value
+    })
+  },
+  onBankAddressChange(e){
+    this.setData({
+      bankAddress:e.detail.value
+    })
+  },
 
   initGoodsList(orderType,goodsId,count){
     let list=[]
@@ -101,10 +141,12 @@ Page({
         })
         .then(list=>{
           const price = list[0].goods.price * list[0].count
+          const freight = this.data.deliverType === 1 && price < 3000 ?20 :0
           this.setData({
             goodsList:list,
             goodsPrice: price,
-            totalPrice:price+this.data.freight
+            freight,
+            totalPrice:price+freight
           })
         })
     }else{
@@ -112,10 +154,12 @@ Page({
       const price = list.length > 1
         ? list.reduce((v1, v2) => v1.goods.price * v1.count + v2.goods.price * v2.count)
         : list[0].goods.price * list[0].count 
+      const freight = this.data.deliverType === 1 && price < 3000 ? 20 : 0
       this.setData({
         goodsList:list,
         goodsPrice:price,
-        totalPrice:price+this.data.freight
+        freight,
+        totalPrice:price+freight
       })
     }
   },
@@ -145,15 +189,29 @@ Page({
   },
 
   submitOrder(e){
-    wx.showLoading();
+    const { 
+      invoiceType, invoiceTitle, name, tfn, companyName, companyPhone, companyAddress, bank, bankAccount, bankAddress,
+      totalPrice, deliverType, freight, address
+      } = this.data
+    if(!this.data.goodsList || this.data.goodsList.length===0){
+      wx.showToast({
+        title: '商品列表为空',
+      })
+      return
+    }
+    if(deliverType === 1 && (!address || !address.id)){
+      wx.showToast({
+        title: '请选择收货地址',
+      })
+      return
+    }
+    wx.showLoading()
     req.post('/api/order',{
-        price: this.data.totalPrice,
-        deliverType: this.data.deliverType,
-        freight:this.data.freight,
-        invoiceType:this.data.invoiceType,
-        invoiceTitle:this.data.invoiceTitle,
-        tfn:this.data.tfn,
-        addressId: this.data.deliverType === 1 ? this.data.address.id : null,
+        price: totalPrice,
+        deliverType,
+        freight,
+        invoiceType,invoiceTitle, name, tfn, companyName, companyPhone, companyAddress, bank, bankAccount, bankAddress,
+        addressId: deliverType === 1 ? address.id : null,
         orderContents: this.data.goodsList.map(o => ({
           goodsId: o.goods.id,
           count: o.count

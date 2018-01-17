@@ -38,6 +38,7 @@
         <view class="goods-text card-body">
             <!-- <template is="wxParse" data="{{wxParseData:article.nodes}}"/> -->
             {{description}}
+            <image wx:for="{{descImages}}" src="{{serverUrl+'/'+item.path}}" mode='widthFix' width='100%'></image>
          </view>
     </view>    
     <view class="goods-info-card">

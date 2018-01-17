@@ -7,12 +7,20 @@ Page({
    */
   data: {
     userType:0,
+    name:'',
+    phone:'',
+    address:'',
+
+    tfn:'',
     companyName:'',
-    tfn:''
+    companyPhone:'',
+    companyAddress:'',
+    bank:'',
+    bankAccount:'',
+    bankAddress:''
   },
 
   setType(e){
-    console.log(e.currentTarget.dataset.type)
     this.setData({
       userType: parseInt(e.currentTarget.dataset.type)
     })
@@ -24,27 +32,81 @@ Page({
     })
   },
   submit(){
-    const {userType,companyName,tfn}=this.data
-    if(userType===1 && (!companyName || !tfn)){
-      wx.showToast({
-        title: '企业信息不能为空',
-      })
-      return
+    const { userType, name, phone, address, tfn, companyName, companyPhone, companyAddress, bank, bankAccount,bankAddress}=this.data
+    let obj={}
+    if(userType === 0){
+      if (!name || !phone || !address){
+        wx.showToast({
+          title: '个人信息不能为空',
+        })
+        return
+      }
+      obj={userType,name,phone,address}
+    }else if (userType === 1){
+      if (!companyName || !tfn || !companyPhone || !companyAddress || !bank || !bankAccount || !bankAddress){
+        wx.showToast({
+          title: '企业信息不能为空',
+        })
+        return
+      }
+      obj = { userType, tfn, companyName, companyPhone, companyAddress, bank, bankAccount, bankAddress}
     }
 
-    req.put('/api/user/type',{userType,companyName,tfn})
+    req.put('/api/user/type',obj)
       .then(res=>res.data.data)
       .then(data=>{})
     this.cancel()
   },
   onNameChange(e){
     this.setData({
-      companyName:e.detail.value.trim()
+      name:e.detail.value.trim()
     })
   },
+  onPhoneChange(e){
+    this.setData({
+      phone:e.detail.value.trim()
+    })
+  },
+  onAddressChange(e){
+    this.setData({
+      address:e.detail.value.trim()
+    })
+  },
+
+
   onTfnChange(e){
     this.setData({
       tfn:e.detail.value.trim()
+    })
+  },
+  onCompanyNameChange(e){
+    this.setData({
+      companyName:e.detail.value.trim()
+    })
+  },
+  onCompanyPhoneChange(e){
+    this.setData({
+      companyPhone:e.detail.value.trim()
+    })
+  },
+  onCompanyAddressChange(e){
+    this.setData({
+      companyAddress:e.detail.value.trim()
+    })
+  },
+  onBankChange(e){
+    this.setData({
+      bank:e.detail.value.trim()
+    })
+  },
+  onBankAccountChange(e){
+    this.setData({
+      bankAccount:e.detail.value.trim()
+    })
+  },
+  onBankAddressChange(e){
+    this.setData({
+      bankAddress:e.detail.value.trim()
     })
   },
 

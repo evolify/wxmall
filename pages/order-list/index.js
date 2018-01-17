@@ -1,6 +1,7 @@
 var wxpay = require('../../utils/pay.js')
 import req from '../../utils/request.js'
 import config from '../../config'
+import {formatTime} from '../../utils/util.js'
 var app = getApp()
 Page({
   data:{
@@ -41,7 +42,10 @@ Page({
     return this.load(status,0)
       .then(data=>{
         this.setData({
-          orderList:data.content
+          orderList:data.content.map(o=>({
+            ...o,
+            orderTime: formatTime(new Date(o.orderTime))
+          }))
         })
         this.page(data)
       })

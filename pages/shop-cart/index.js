@@ -44,10 +44,17 @@ Page({
           .then(data=>{
             if (data.code === 0) {
               this.refreshData(shoppingCar, data.data)
+            }else{
+              this.removeGoods(item.goods.id)
             }
           })
       })
       // this.updateData(shoppingCar,[])
+  },
+  removeGoods(id){
+    const list = this.data.list.filter(item => item.goods.id !== id)
+    const ids = this.data.selectedIds.filter(i => i !== id)
+    this.updateData(list, ids)
   },
   refreshData(list,goods){
     let item=list.find(i=>i.goods.id === goods.id)

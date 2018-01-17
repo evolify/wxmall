@@ -9,14 +9,49 @@
       企业
       <icon type='success' size='18' hidden='{{userType !== 1}}'/>
     </view>
-    <block wx:if="{{userType === 1}}">
+    <block wx:if="{{userType === 0}}">
       <view class='weui-cell'>
-        <label>企业名称</label>
-        <input placeholder='请输入企业名称' value='{{companyName}}' bindinput='onNameChange'></input>
+        <label>联系人</label>
+        <input placeholder='请输入联系人姓名' value='{{name}}' bindinput='onNameChange'></input>
       </view>
+      <view class='weui-cell'>
+        <label>电话</label>
+        <input placeholder='请输入联系电话' value="{{phone}}" bindinput='onPhoneChange'></input>
+      </view>
+      <view class='weui-cell'>
+        <label>地址</label>
+        <input placeholder='请输入地址' value="{{address}}" bindinput='onAddressChange'></input>
+      </view>
+    </block>
+
+    <block wx:if="{{userType === 1}}">
       <view class='weui-cell'>
         <label>企业税号</label>
         <input placeholder='请输入企业税号' value="{{tfn}}" bindinput='onTfnChange'></input>
+      </view>
+      <view class='weui-cell'>
+        <label>企业名称</label>
+        <input placeholder='请输入企业名称' value='{{companyName}}' bindinput='onCompanyNameChange'></input>
+      </view>
+      <view class='weui-cell'>
+        <label>企业电话</label>
+        <input placeholder='请输入企业电话' value='{{companyPhone}}' bindinput='onCompanyPhoneChange'></input>
+      </view>
+      <view class='weui-cell'>
+        <label>企业地址</label>
+        <input placeholder='请输入企业地址' value='{{companyAddress}}' bindinput='onCompanyAddressChange'></input>
+      </view>
+      <view class='weui-cell'>
+        <label>银行账户</label>
+        <input placeholder='请输入企业银行账户' value='{{bankAccount}}' bindinput='onBankAccountChange'></input>
+      </view>
+      <view class='weui-cell'>
+        <label>开户行</label>
+        <input placeholder='请输入开户行' value='{{bank}}' bindinput='onBankChange'></input>
+      </view>
+      <view class='weui-cell'>
+        <label>开户地址</label>
+        <input placeholder='请输入开户地址' value='{{bankAddress}}' bindinput='onBankAddressChange'></input>
       </view>
     </block>
   </view>
