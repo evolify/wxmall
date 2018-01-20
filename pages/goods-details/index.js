@@ -61,7 +61,7 @@ Page({
       key: 'shoppingCar',
       success: function(res) {
         that.setData({
-          shoppingCar:res.data
+          shoppingCar:res.data || []
         });
       }
     })
@@ -120,11 +120,12 @@ Page({
     this.setData({
       shopType: "addShopCar"
     })
-    if(this.data.optional){
-      this.bindGuiGeTap();
-    }else{
-      this.addShoppingCar()
-    }
+    this.bindGuiGeTap();
+    // if(this.data.optional){
+    //   this.bindGuiGeTap();
+    // }else{
+    //   this.addShoppingCar()
+    // }
   },
 
   /**
@@ -134,11 +135,12 @@ Page({
     this.setData({
       shopType: "tobuy"
     });
-    if(this.data.optional){
-      this.bindGuiGeTap();
-    }else{
-      this.buyNow()
-    }
+    this.bindGuiGeTap();
+    // if(this.data.optional){
+    //   this.bindGuiGeTap();
+    // }else{
+    //   this.buyNow()
+    // }
   },  
   /**
    * 规格选择弹出框
@@ -157,14 +159,31 @@ Page({
     })  
   },
 
+  countInput: function(e){
+    const value =e.detail.value
+    if(!value){
+      this.setData({
+        count:''
+      })
+      return value
+    }
+    if(/^(0|[1-9]\d*)$/.test(value)){
+      this.setData({
+        count:parseInt(value)
+      })
+      return value
+    }
+    return this.data.count
+  },
   countDec: function() {
+    const c = parseInt(this.data.count)
     this.setData({  
-        count: this.data.count<=1 ?1 :this.data.count-1
+        count: c<=1 ?1 :c-1
     })  
   },
   countInc: function() {
     this.setData({  
-        count: this.data.count+1
+      count: (parseInt(this.data.count) || 0)+1
     })  
   },
 
@@ -173,7 +192,13 @@ Page({
   */
   addShoppingCar:function(){
     let {goods,count}=this.data
-    let shoppingCar = [...this.data.shoppingCar,{goods,count}]
+    let shoppingCar = [
+      ...this.data.shoppingCar.filter(i=>i.goods.id!==goods.id),
+      {
+        goods,
+        count:count || 1
+      }
+    ]
 
     this.setData({
       shoppingCar:shoppingCar
@@ -198,7 +223,7 @@ Page({
     this.closePopupTap();
     const goods = this.data.goods
     wx.navigateTo({
-      url: "/pages/to-pay-order/index?orderType=buyNow&goodsId="+goods.id+"&count="+this.data.count
+      url: "/pages/to-pay-order/index?orderType=buyNow&goodsId="+goods.id+"&count="+(this.data.count||1)
     })    
   },
   onShareAppMessage: function () {

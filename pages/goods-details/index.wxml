@@ -76,15 +76,15 @@
         <view class="popup-contents">
              <view class="pop-goods-info">
                 <view class="pop-img-box">
-                    <image src="{{serverUrl+'/'+goods.images[0].path}}" class="goods-thumbnail"/>
+                    <image src="{{serverUrl+'/'+images[0].path}}" class="goods-thumbnail"/>
                 </view>
                 <view class="pop-goods-des">
-                    <view class="pop-goods-title">{{goods.name}}</view>
+                    <view class="pop-goods-title">{{name}}</view>
                     <view class="pop-goods-price">¥ {{goods.sellPrice}}</view>
                 </view>
                 <view class="pop-goods-close" bindtap="closePopupTap"></view>
              </view>
-             <view class="goods-list">
+             <view class="goods-list" hidden='{{!optional}}'>
               <label wx:for='{{goodsList}}' wx:key="props-pop" 
                 bindtap='selectGoods'
                 data-goods="{{item}}"
@@ -97,7 +97,7 @@
                 <view class="num-box">
                     <view class="count-dec {{count <= 1 ? 'disable': ''}}" bindtap="countDec">-</view>
                     <view class="count-input">
-                       <input  type="number" value="{{count}}" disabled/>
+                       <input  type="number" value="{{count}}" bindinput='countInput'/>
                     </view>
                     <view class="count-inc" bindtap="countInc">+</view>
                 </view>

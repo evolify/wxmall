@@ -150,10 +150,8 @@ Page({
           })
         })
     }else{
-      list=wx.getStorageSync('toByGoodsList')     
-      const price = list.length > 1
-        ? list.reduce((v1, v2) => v1.goods.price * v1.count + v2.goods.price * v2.count)
-        : list[0].goods.price * list[0].count 
+      list=wx.getStorageSync('toByGoodsList') || [0]
+      const price = [0,...list].reduce((v1,v2)=>v1+v2.goods.price*v2.count)
       const freight = this.data.deliverType === 1 && price < 3000 ? 20 : 0
       this.setData({
         goodsList:list,

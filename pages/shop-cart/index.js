@@ -204,13 +204,19 @@ Page({
      * 删除选择
      */
     deleteSelected:function(){
-        let {list,selectedIds}=this.data
-        list=list.filter(item=>selectedIds.every(id=>id!==item.goods.id))
-        this.updateData(list,[])
+      if (this.data.noSelect) {
+        return
+      }
+      let {list,selectedIds}=this.data
+      list=list.filter(item=>selectedIds.every(id=>id!==item.goods.id))
+      this.updateData(list,[])
     },
 
     toPayOrder:function(){
-      wx.showLoading();
+      if(this.data.noSelect){
+        return
+      }
+      wx.showLoading()
       var that = this;
       if (this.data.noSelect) {
         return;

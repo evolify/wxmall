@@ -217,6 +217,9 @@ swiper-item image {
   padding: 30rpx 0;
   border-bottom: 1px solid #eee;
 }
+.popup-contents .goods-list{
+  border-bottom: 1px solid #eee;
+}
 .pop-img-box{
   width: 120rpx;
   height: 120rpx;
@@ -278,7 +281,6 @@ swiper-item image {
    justify-content: space-between;
    padding: 30rpx 30rpx 48rpx 0;
    margin-left: 30rpx; 
-   border-top: 1px solid #eee;
    margin-top: 30rpx;
    align-items: center;
 }
@@ -297,6 +299,9 @@ swiper-item image {
   line-height: 62rpx;
   text-align: center;
   border: 1px solid #eee;
+}
+.buy-num-box .num-box .count-input{
+  width:120rpx;
 }
 .buy-num-box .num-box .count-input{
   font-size: 28rpx;
