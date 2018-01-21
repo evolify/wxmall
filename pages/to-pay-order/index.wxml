@@ -9,8 +9,8 @@
               <icon type='success' size='18' hidden='{{deliverType !== 0}}'/>
             </view>
             <view class='option post' bindtap='tapPost'>
-              <label class='label' hidden='{{freight===0}}'>邮寄 （运费 ￥20）</label>
-              <label class='label' hiden='{{freight>0}}'>邮寄 （免邮费）</label>
+              <label class='label' wx:if='{{calcFreight > 0}}'>邮寄 （运费 ￥20）</label>
+              <label class='label' wx:else>邮寄 （免邮费）</label>
               <icon type='success' size='18' hidden='{{deliverType !== 1}}'/>
             </view>
           </view>

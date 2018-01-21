@@ -36,20 +36,25 @@ Page({
     });
   },
   onLoad: function () {
-      this.initEleWidth();
-      var shoppingCar = wx.getStorageSync('shoppingCar');
-      shoppingCar.forEach(item=>{
-        req.get('/api/goods/'+item.goods.id)
-          .then(res=>res.data)
-          .then(data=>{
-            if (data.code === 0) {
-              this.refreshData(shoppingCar, data.data)
-            }else{
-              this.removeGoods(item.goods.id)
-            }
-          })
-      })
-      // this.updateData(shoppingCar,[])
+      this.initEleWidth()
+  },
+  onShow(){
+    var shoppingCar = wx.getStorageSync('shoppingCar')
+    this.setData({
+      list:[],
+      selectedIds:[]
+    })
+    shoppingCar.forEach(item => {
+      req.get('/api/goods/' + item.goods.id)
+        .then(res => res.data)
+        .then(data => {
+          if (data.code === 0) {
+            this.refreshData(shoppingCar, data.data)
+          } else {
+            this.removeGoods(item.goods.id)
+          }
+        })
+    })
   },
   removeGoods(id){
     const list = this.data.list.filter(item => item.goods.id !== id)
@@ -83,9 +88,10 @@ Page({
     if (ids.length <= 0) {
       return 0
     }
-    return list.filter(item => ids.some(id => item.goods.id === id))
+    const price = list.filter(item => ids.some(id => item.goods.id === id))
       .map(item => item.goods.price*item.count)
       .reduce((p1, p2) => p1 + p2)
+    return parseFloat(price.toFixed(2))
   },
   toIndexPage:function(){
       wx.switchTab({
@@ -184,7 +190,7 @@ Page({
      if (!item) {
        return
      }
-     item.count=item.cound<=1 ?1 :item.count-1
+     item.count=item.count<=1 ?1 :item.count-1
      this.updateData(list, this.data.selectedIds)
    },
 
@@ -221,7 +227,7 @@ Page({
       if (this.data.noSelect) {
         return;
       }
-      wx.setStorageSync('toByGoodsList', this.data.list.filter(item=>item.selected))
+      wx.setStorageSync('toBuyGoodsList', this.data.list.filter(item=>item.selected))
       this.navigateToPayOrder()
     },
     navigateToPayOrder:function () {

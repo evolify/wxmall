@@ -15,6 +15,7 @@ Page({
     serverUrl:config.serverUrl,
     deliverType:0, //0 渔山岛自提，1 邮寄
     freight:0, //运费 如果是快递，运费为20
+    calcFreight:0,
     invoiceType:0, //发票类型，0：不需要开票，1：个人发票，2：公司发票
     invoiceTitle:null,//发票抬头
     tfn: null,//公司税号    tfn:'',
@@ -67,11 +68,10 @@ Page({
     })
   },
   tapPost() {
-    const freight = this.data.goodsPricerice < 3000 ? 20 : 0
     this.setData({
       deliverType: 1,
-      freight,
-      totalPrice:this.data.goodsPrice+freight
+      freight:this.data.calcFreight,
+      totalPrice:this.data.goodsPrice+this.data.calcFreight
     })
   },
   bindAddressChange(e){
@@ -140,22 +140,28 @@ Page({
           return list
         })
         .then(list=>{
-          const price = list[0].goods.price * list[0].count
-          const freight = this.data.deliverType === 1 && price < 3000 ?20 :0
+          let price = list[0].goods.price * list[0].count
+          price = parseFloat(price.toFixed(2))
+          const calcFreight = price < 3000 ?20 :0
+          const freight = this.data.deliverType === 1 ?calcFreight :0
           this.setData({
             goodsList:list,
             goodsPrice: price,
+            calcFreight,
             freight,
             totalPrice:price+freight
           })
         })
     }else{
-      list=wx.getStorageSync('toByGoodsList') || [0]
-      const price = [0,...list].reduce((v1,v2)=>v1+v2.goods.price*v2.count)
-      const freight = this.data.deliverType === 1 && price < 3000 ? 20 : 0
+      list=wx.getStorageSync('toBuyGoodsList') || [0]
+      let price = [0,...list].reduce((v1,v2)=>v1+v2.goods.price*v2.count)
+      price=parseFloat(price.toFixed(2))
+      const calcFreight = price < 3000 ? 20 : 0
+      const freight = this.data.deliverType === 1 ? calcFreight : 0
       this.setData({
         goodsList:list,
         goodsPrice:price,
+        calcFreight,
         freight,
         totalPrice:price+freight
       })
@@ -228,13 +234,13 @@ Page({
 
   updateShoppingCar(){
     if(this.data.orderType!=='buyNow'){
-      let list1 = wx.getStorageSync('toByGoodsList')
+      let list1 = wx.getStorageSync('toBuyGoodsList')
       let list2=wx.getStorageSync('shoppingCar')
       wx.setStorage({
         key: 'shoppingCar',
         data: list2.filter(o=>list1.every(o1=>o1.goods.id!==o.goods.id))
       })
-      wx.removeStorageSync('toByGoodsList')
+      wx.removeStorageSync('toBuyGoodsList')
     }
   },
 
