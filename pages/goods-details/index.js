@@ -2,8 +2,7 @@
 //获取应用实例
 import config from '../../config'
 import req from '../../utils/request'
-var app = getApp();
-var WxParse = require('../../wxParse/wxParse.js');
+var app = getApp()
 
 Page({
   data: {
@@ -44,6 +43,8 @@ Page({
     optional:false,
     count:1,
 
+    collected:false,
+
     shoppingCar:[]
   },
 
@@ -67,8 +68,21 @@ Page({
     })
 
     // 获取商品信息
+    this.setData({
+      id:e.id
+    })
     this.details(e.id)
+    this.loadFavorite()
+  },
 
+  loadFavorite(){
+    req.get('/api/user/favorite')
+      .then(res=>res.data.data)
+      .then(data=>{
+        this.setData({
+          collected:data.some(id=>id==this.data.id)
+        })
+      })
   },
 
   details(id){
@@ -168,10 +182,12 @@ Page({
       return value
     }
     if(/^(0|[1-9]\d*)$/.test(value)){
+      let c = parseInt(value)
+      c >= this.data.goods.stock && (c=this.data.goods.stock)
       this.setData({
-        count:parseInt(value)
+        count: c
       })
-      return value
+      return c
     }
     return this.data.count
   },
@@ -182,8 +198,9 @@ Page({
     })  
   },
   countInc: function() {
+    let c = parseInt(this.data.count) || 0
     this.setData({  
-      count: (parseInt(this.data.count) || 0)+1
+      count: c>=this.data.goods.stock ?this.data.goods.stock :c+1
     })  
   },
 
@@ -192,6 +209,12 @@ Page({
   */
   addShoppingCar:function(){
     let {goods,count}=this.data
+    if(!count){
+      wx.showToast({
+        title:'数量为0'
+      })
+      return
+    }
     let shoppingCar = [
       ...this.data.shoppingCar.filter(i=>i.goods.id!==goods.id),
       {
@@ -237,6 +260,16 @@ Page({
         // 转发失败
       }
     }
+  },
+
+  collect(){
+    req.put(`/api/user/favorite/${this.data.id}`)
+      .then(res => res.data.data)
+      .then(data => {
+        this.setData({
+          collected: data.some(id => id == this.data.id)
+        })
+      })
   },
 
   /**

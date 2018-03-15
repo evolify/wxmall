@@ -23,7 +23,7 @@
         <view class="a-gooods" wx:for="{{list}}"  wx:key="{{index}}" >
             <view class="a-goods-conts {{item.selected? 'active':''}}" bindtap="selectTap" bindtouchstart="touchS" bindtouchmove="touchM" bindtouchend="touchE" data-id="{{item.goods.id}}"    style="{{item.style || ''}}">
                 <view class="goods-info">
-                    <view class="img-box">
+                    <view class="img-box" catchtap='toDetails' data-id="{{item.goods.prodId}}">
                         <image src="{{serverUrl+'/'+item.goods.img}}" class="img"/>
                     </view>
                     <view class="text-box">

@@ -36,9 +36,9 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    const {cateId,cateName}=options
+    const {cateId,cateName,keywords}=options
     this.setData({
-      cateId
+      cateId,keywords
     },()=>{
       this.loadProducts()
     })

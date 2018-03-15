@@ -9,8 +9,12 @@
       我的订单
       <label class='icon'>></label>
     </view>
+    <view class='weui-cell' bindtap='toFavorite'>
+      收藏夹
+      <label class='icon'>></label>
+    </view>
     <view class='weui-cell' bindtap='toAddressList'>
-      我的收货地址
+      收货地址
       <label class='icon'>></label>
     </view>
     <view class='weui-cell' bindtap='toUserType'>

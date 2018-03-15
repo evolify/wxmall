@@ -1,0 +1,72 @@
+/* pages/goodsList/index.wxss */
+page{
+  background: #eee;
+}
+.container{
+  align-items:stretch;
+  height: 100%;
+}
+.search-wrapper{
+  background:#fff;
+}
+.search-box{
+  display: flex;
+  flex-flow:row nowrap;
+  align-items: center;
+  background: #eee;
+  margin:10rpx;
+  padding:10rpx;
+}
+.search-box .input-keywords{
+  flex-grow:1;
+}
+.search-box .btn-search{
+  flex-shrink: 0;
+  padding:0 10px;
+}
+.goods-list{
+
+}
+.goods-item{
+  display: flex;
+  flex-flow: row nowrap;
+  background: #fff;
+  padding:5px;
+  margin-top:10rpx;
+}
+.goods-item .goods-img{
+  width:150rpx;
+  height: 150rpx;
+}
+.goods-item .right{
+  flex-grow:1;
+  margin-left:20rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.goods-item .row{
+  display: flex;
+  flex-flow:row wrap;
+  align-items: center;
+  justify-content: space-between;
+}
+.goods-item .name{
+  font-size:1.1rem;
+}
+.goods-item .spec{
+
+}
+.goods-item .desc{
+
+}
+.goods-item .price{
+  color:red;
+}
+.goods-item .stock{
+
+}
+.page-tips{
+  width:100%;
+  text-align:center;
+}

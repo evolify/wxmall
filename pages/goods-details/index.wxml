@@ -68,6 +68,9 @@
             <image class='icon' mode='aspectFit' src='../../images/icon-cart.png'></image>
             <label class='label'>购物车</label>
         </view>
+        <view class='favorite' bindtap='collect'>
+            <image class='icon' mode='aspectFit' src="{{collected?'../../images/favorite_on.png':'../../images/favorite.png'}}"></image>
+        </view>
         <view class="join-shop-cart" bindtap="toAddShoppingCar">加入购物车</view>
         <view class="now-buy" bindtap="toBuy">立即购买</view>
    </view>
@@ -101,11 +104,11 @@
                     </view>
                     <view class="count-inc" bindtap="countInc">+</view>
                 </view>
-             </view>  
-             <view class="popup-join-btn" wx:if="{{shopType =='addShopCar'}}" bindtap="addShoppingCar">
+             </view>
+             <view class="{{'popup-join-btn'+(!count ?' disabled' :'')}}" wx:if="{{shopType =='addShopCar'}}" bindtap="addShoppingCar">
                 加入购物车
              </view>
-             <view class="popup-join-btn" wx:if="{{shopType =='tobuy'}}" bindtap="buyNow">
+             <view class="{{'popup-join-btn'+(!count ?' disabled':'')}}" wx:if="{{shopType =='tobuy'}}" bindtap="buyNow">
                 立即购买
              </view>                      
         </view>

@@ -237,6 +237,12 @@ Page({
       })
     },
 
+    toDetails(e){
+      wx.navigateTo({
+        url: '/pages/goods-details/index?id=' + e.currentTarget.dataset.id,
+      })
+    },
+
 /**
  * 页面相关事件处理函数--监听用户下拉动作
  */

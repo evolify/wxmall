@@ -2,6 +2,7 @@
   "pages": [
     "pages/index/index",
     "pages/user/index",
+    "pages/favorite/index",
     "pages/refund/index",
     "pages/category/index",
     "pages/goods-details/index",

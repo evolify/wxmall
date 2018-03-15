@@ -9,7 +9,8 @@ Page({
   data: {
     categories:[],
     cates:[],
-    selectedCates:[]
+    selectedCates:[],
+    keywords:''
   },
 
   /**
@@ -30,6 +31,21 @@ Page({
           })
         }
       })
+  },
+
+  onKeywordsChange(e) {
+    this.setData({
+      keywords: e.detail.value
+    }, () => {
+    })
+  },
+  onSearch() {
+    if (this.data.selectedCates.length > 0) {
+      const { id, name } = this.data.selectedCates[this.data.selectedCates.length - 1]
+      this.toGoodsList(id, name,this.data.keywords)
+    } else {
+      this.toGoodsList(0, '全部分类',this.data.keywords)
+    }
   },
 
   /**
@@ -95,9 +111,9 @@ Page({
     }
   },
 
-  toGoodsList(id,name){
+  toGoodsList(id,name,keywords){
     wx.navigateTo({
-      url: '/pages/goodsList/index?cateId='+id+'&cateName='+name,
+      url: '/pages/goodsList/index?cateId='+id+'&cateName='+name+'&keywords='+(keywords || ''),
     })
   },
 

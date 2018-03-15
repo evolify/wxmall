@@ -6,6 +6,14 @@
     <view wx:if="{{selectedCates.length === 1}}" class='nav-back'>{{'<  全部分类'}}</view>
     <view wx:if="{{selectedCates.length>1}}" class='nav-back'>{{'<  '+selectedCates[selectedCates.length-2].name}}</view>
   </view> 
+
+  <view class='search-wrapper'>
+    <view class='search-box'>
+      <input class='input-keywords' bindinput='onKeywordsChange' placeholder='输入关键字查找'></input>
+      <label size='mini' class='btn-search' bindtap='onSearch'><icon type='search'></icon></label>
+    </view>
+  </view>
+
   <view class='cate-grid'>
     <view class='cate-item' bindtap='tapAll'>全部</view>
     <view class='cate-item' wx:for="{{cates}}" wx:key="unique" data-cate="{{item}}" bindtap='tapCate'>
